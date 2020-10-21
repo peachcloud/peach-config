@@ -15,11 +15,12 @@ username = sys.argv[1]
 # Update Pi and install requirements
 subprocess.call(["apt-get", "update", "-y"])
 subprocess.call(["apt-get", "upgrade", "-y"])
-subprocess.call(["apt-get", "install", "vim", "man-db", "locales", "iw", "hostapd", "dnsmasq", "git", "python-smbus", "i2c-tools", "build-essential", "curl", "mosh", "sudo", "pkg-config", "libssl-dev", "avahi-daemon", "-y"])
+subprocess.call(["apt-get", "install", "vim", "man-db", "locales", "iw", "hostapd", "dnsmasq", "git", "python-smbus", "i2c-tools", "build-essential", "curl", "mosh", "sudo", "pkg-config", "libssl-dev", "avahi-daemon", "nginx", "-y"])
 subprocess.call(["/usr/sbin/adduser", username])
 
 # Overwrite configuration files
 subprocess.call(["cp", "conf/bcm2710-rpi-3-b.dtb", "/boot/firmware/bcm2710-rpi-3-b.dtb"])
+subprocess.call(["mkdir", "/boot/firmware/overlays/"])
 subprocess.call(["cp", "conf/mygpio.dtbo", "/boot/firmware/overlays/mygpio.dtbo"])
 subprocess.call(["cp", "conf/config.txt", "/boot/firmware/config.txt"])
 subprocess.call(["cp", "conf/modules", "/etc/modules"])
