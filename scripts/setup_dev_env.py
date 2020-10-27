@@ -2,7 +2,7 @@
 
 # Install and configure development environment for PeachCloud on RPi3 with Debian Buster
 # Includes installation of Rust and setup of I2C and a RTC
-# Consult the PeachCloud GPIO documentation [ ... ] for pinouts
+# Consult the PeachCloud GPIO documentation (http://docs.peachcloud.org/hardware/gpio_pinout.html) for pinouts
 
 import os
 import subprocess
@@ -15,6 +15,10 @@ parser.add_argument("user", type=str, help="username for the default user accoun
 parser.add_argument("-i", "--i2c", help="configure i2c", action="store_true")
 parser.add_argument("-r", "--rtc", choices=["ds1307", "ds3231"], help="configure real-time clock")
 args = parser.parse_args()
+
+# Ensure RTC configuration requirements are met (if selected)
+if args.rtc and not args.i2c:
+    parser.error("i2c configuration is required for rtc configuration")
 
 # Save username argument
 username = args.user
@@ -29,14 +33,26 @@ subprocess.call(["apt-get", "install", "vim", "man-db", "locales", "iw", "hostap
 # Add the system user with supplied username
 print("[ ADDING SYSTEM USER ]")
 subprocess.call(["/usr/sbin/adduser", username])
+subprocess.call(["usermod", "-aG", "sudo", username])
 
 # Overwrite configuration files
-subprocess.call(["mkdir", "/boot/firmware/overlays/"])
-subprocess.call(["cp", "conf/mygpio.dtbo", "/boot/firmware/overlays/mygpio.dtbo"])
-subprocess.call(["cp", "conf/config.txt", "/boot/firmware/config.txt"])
-subprocess.call(["cp", "conf/modules", "/etc/modules"])
-subprocess.call(["cp", "conf/peach.conf", "/etc/nginx/sites-available/peach.conf"])
-subprocess.call(["ln", "-s", "/etc/nginx/sites-available/peach.conf", "/etc/nginx/sites-enabled/"])
+print("[ CONFIGURING OPERATING SYSTEM ]")
+if args.i2c:
+    print("[ CONFIGURING I2C ]")
+    subprocess.call(["mkdir", "/boot/firmware/overlays/"])
+    subprocess.call(["cp", "conf/mygpio.dtbo", "/boot/firmware/overlays/mygpio.dtbo"])
+    subprocess.call(["cp", "conf/config.txt_i2c", "/boot/firmware/config.txt"])
+    subprocess.call(["cp", "conf/modules", "/etc/modules"])
+if args.rtc and args.i2c:
+    if args.rtc == "ds1307":
+        print("[ CONFIGURING DS1307 RTC MODULE ]")
+        subprocess.call(["cp", "conf/config.txt_rtc1307", "/boot/firmware/config.txt"])
+    elif args.rtc == "ds3231":
+        print("[ CONFIGURING DS3231 RTC MODULE ]")
+        subprocess.call(["cp", "conf/config.txt_rtc3231", "/boot/firmware/config.txt"])
+    subprocess.call(["cp", "conf/modules_rtc", "/etc/modules"])
+    subprocess.call(["cp", "conf/activate-rtc.service", "/etc/systemd/system/activate-rtc.service"])
+print("[ CONFIGURING NETWORKING ]")
 subprocess.call(["cp", "conf/hostname", "/etc/hostname"])
 subprocess.call(["cp", "conf/hosts", "/etc/hosts"])
 subprocess.call(["cp", "conf/interfaces", "/etc/network/interfaces"])
@@ -45,10 +61,12 @@ subprocess.call(["cp", "conf/hostapd.conf", "/etc/hostapd/hostapd.conf"])
 subprocess.call(["cp", "conf/dnsmasq.conf", "/etc/dnsmasq.conf"])
 subprocess.call(["cp", "conf/dhcpd.conf", "/etc/dhcpd.conf"])
 subprocess.call(["cp", "conf/00-accesspoint.rules", "/etc/udev/rules.d/00-accesspoint.rules"])
-subprocess.call(["cp", "conf/activate-rtc.service", "/etc/systemd/system/activate-rtc.service"])
+print("[ CONFIGURING NGINX ]")
+subprocess.call(["cp", "conf/peach.conf", "/etc/nginx/sites-available/peach.conf"])
+subprocess.call(["ln", "-s", "/etc/nginx/sites-available/peach.conf", "/etc/nginx/sites-enabled/"])
+print("[ CONFIGURING LOCALE ]")
+subprocess.call(["dpkg-reconfigure", "locales"])
+print("[ CONFIGURING CONSOLE LOG-LEVEL PRINTING ]")
+subprocess.call(["sysctl", "-w", "kernel.printk='4 4 1 7'"])
 
-# left out: setting of locales, rust installation, console log-level printing
-
-# we might also eventually want to pull the `.deb` release files for all microservices and install them. work towards an all-in-one installation script with optional flags to selectively install either the dev environment (will include rust) or a release environment (no rust or other bells and whistles)
-
-#subprocess.call(["sysctl", "-w", "kernel.printk='4 4 1 7'"])
+# TODO: we might also eventually want to pull the `.deb` release files for all microservices and install them. work towards an all-in-one installation script with optional flags to selectively install either the dev environment (will include rust) or a release environment (no rust or other bells and whistles)
