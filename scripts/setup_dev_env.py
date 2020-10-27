@@ -31,7 +31,6 @@ print("[ ADDING SYSTEM USER ]")
 subprocess.call(["/usr/sbin/adduser", username])
 
 # Overwrite configuration files
-subprocess.call(["cp", "conf/bcm2710-rpi-3-b.dtb", "/boot/firmware/bcm2710-rpi-3-b.dtb"])
 subprocess.call(["mkdir", "/boot/firmware/overlays/"])
 subprocess.call(["cp", "conf/mygpio.dtbo", "/boot/firmware/overlays/mygpio.dtbo"])
 subprocess.call(["cp", "conf/config.txt", "/boot/firmware/config.txt"])
