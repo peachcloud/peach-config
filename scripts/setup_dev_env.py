@@ -7,15 +7,27 @@
 import os
 import subprocess
 import sys
+import argparse
 
+# Setup argument parser
+parser = argparse.ArgumentParser()
+parser.add_argument("user", type=str, help="username for the default user account")
+parser.add_argument("-i", "--i2c", help="configure i2c", action="store_true")
+parser.add_argument("-r", "--rtc", choices=["ds1307", "ds3231"], help="configure real-time clock")
+args = parser.parse_args()
 
-# Save arguments
-username = sys.argv[1]
+# Save username argument
+username = args.user
 
 # Update Pi and install requirements
+print("[ UPDATING OPERATING SYSTEM ]")
 subprocess.call(["apt-get", "update", "-y"])
 subprocess.call(["apt-get", "upgrade", "-y"])
+print("[ INSTALLING SYSTEM REQUIREMENTS ]")
 subprocess.call(["apt-get", "install", "vim", "man-db", "locales", "iw", "hostapd", "dnsmasq", "git", "python-smbus", "i2c-tools", "build-essential", "curl", "mosh", "sudo", "pkg-config", "libssl-dev", "avahi-daemon", "nginx", "wget", "-y"])
+
+# Add the system user with supplied username
+print("[ ADDING SYSTEM USER ]")
 subprocess.call(["/usr/sbin/adduser", username])
 
 # Overwrite configuration files
