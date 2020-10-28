@@ -2,6 +2,13 @@
 arm_control=0x200
 
 enable_uart=1
+upstream_kernel=1
+# Activate I2C
+dtparam=i2c_arm=on
+# Activate DS1307 RTC module
+dtoverlay=i2c-rtc,ds1307
+# Apply device tree overlay to enable pull-up resistors for buttons
+device_tree_overlay=overlays/mygpio.dtbo
 
 kernel=vmlinuz-4.19.0-10-arm64
 # For details on the initramfs directive, see
