@@ -53,6 +53,7 @@ if args.rtc and args.i2c:
     subprocess.call(["cp", "conf/modules_rtc", "/etc/modules"])
     subprocess.call(["cp", "conf/activate_rtc.sh", "/usr/local/bin/activate_rtc"])
     subprocess.call(["cp", "conf/activate-rtc.service", "/etc/systemd/system/activate-rtc.service"])
+    subprocess.call(["systemctl", "daemon-reload"])
     subprocess.call(["systemctl", "enable", "activate-rtc"])
 print("[ CONFIGURING NETWORKING ]")
 subprocess.call(["cp", "conf/hostname", "/etc/hostname"])
