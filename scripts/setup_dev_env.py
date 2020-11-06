@@ -71,10 +71,10 @@ if args.i2c:
 if args.rtc and args.i2c:
     if args.rtc == "ds1307":
         print("[ CONFIGURING DS1307 RTC MODULE ]")
-        subprocess.call(["cp", "conf/config.txt_rtc1307", "/boot/firmware/config.txt"])
+        subprocess.call(["cp", "conf/config.txt_ds1307", "/boot/firmware/config.txt"])
     elif args.rtc == "ds3231":
         print("[ CONFIGURING DS3231 RTC MODULE ]")
-        subprocess.call(["cp", "conf/config.txt_rtc3231", "/boot/firmware/config.txt"])
+        subprocess.call(["cp", "conf/config.txt_ds3231", "/boot/firmware/config.txt"])
     subprocess.call(["cp", "conf/modules_rtc", "/etc/modules"])
     subprocess.call(["cp", "conf/activate_rtc.sh", "/usr/local/bin/activate_rtc"])
     subprocess.call(["cp", "conf/activate-rtc.service", "/etc/systemd/system/activate-rtc.service"])
