@@ -40,6 +40,7 @@ subprocess.call(["/usr/sbin/adduser", username])
 subprocess.call(["usermod", "-aG", "sudo", username])
 
 print("[ CREATING SYSTEM GROUPS ]")
+subprocess.call(["/usr/sbin/groupadd", "peach"])
 subprocess.call(["/usr/sbin/groupadd", "i2c-user"])
 subprocess.call(["/usr/sbin/groupadd", "gpio-user"])
 subprocess.call(["/usr/sbin/groupadd", "wpactrl-user"])
