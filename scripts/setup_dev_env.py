@@ -66,7 +66,6 @@ if args.i2c:
     subprocess.call(["cp", "conf/mygpio.dtbo", "/boot/firmware/overlays/mygpio.dtbo"])
     subprocess.call(["cp", "conf/config.txt_i2c", "/boot/firmware/config.txt"])
     subprocess.call(["cp", "conf/modules", "/etc/modules"])
-    subprocess.call(["cp", "conf/50-i2c.rules", "/etc/udev/rules.d/50-i2c.rules"])
 
 if args.rtc and args.i2c:
     if args.rtc == "ds1307":
