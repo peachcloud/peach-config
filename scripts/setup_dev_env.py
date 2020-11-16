@@ -89,6 +89,8 @@ subprocess.call(["cp", "conf/hostapd.conf", "/etc/hostapd/hostapd.conf"])
 subprocess.call(["cp", "conf/dnsmasq.conf", "/etc/dnsmasq.conf"])
 subprocess.call(["cp", "conf/dhcpd.conf", "/etc/dhcpd.conf"])
 subprocess.call(["cp", "conf/00-accesspoint.rules", "/etc/udev/rules.d/00-accesspoint.rules"])
+subprocess.call(["mkdir", "/lib/systemd/system/networking.service.d/"])
+subprocess.call(["cp", "conf/reduce-timeout.conf", "/lib/systemd/system/networking.service.d/reduce-timeout.conf"])
 
 print("[ CONFIGURING NGINX ]")
 subprocess.call(["cp", "conf/peach.conf", "/etc/nginx/sites-available/peach.conf"])
