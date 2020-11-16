@@ -41,7 +41,6 @@ subprocess.call(["usermod", "-aG", "sudo", username])
 
 print("[ CREATING SYSTEM GROUPS ]")
 subprocess.call(["/usr/sbin/groupadd", "peach"])
-subprocess.call(["/usr/sbin/groupadd", "i2c-user"])
 subprocess.call(["/usr/sbin/groupadd", "gpio-user"])
 subprocess.call(["/usr/sbin/groupadd", "wpactrl-user"])
 
@@ -52,7 +51,7 @@ for user in users:
     subprocess.call(["/usr/sbin/adduser", "--system", "--no-create-home", "--ingroup", "peach", user])
 
 print("[ ASSIGNING GROUP MEMBERSHIP ]")
-subprocess.call(["/usr/sbin/usermod", "-a", "-G", "i2c-user", "peach-oled"])
+subprocess.call(["/usr/sbin/usermod", "-a", "-G", "i2c", "peach-oled"])
 subprocess.call(["/usr/sbin/usermod", "-a", "-G", "gpio-user", "peach-buttons"])
 subprocess.call(["/usr/sbin/usermod", "-a", "-G", "wpactrl-user", "peach-network"])
 
@@ -67,7 +66,6 @@ if args.i2c:
     subprocess.call(["cp", "conf/mygpio.dtbo", "/boot/firmware/overlays/mygpio.dtbo"])
     subprocess.call(["cp", "conf/config.txt_i2c", "/boot/firmware/config.txt"])
     subprocess.call(["cp", "conf/modules", "/etc/modules"])
-    subprocess.call(["cp", "conf/50-i2c.rules", "/etc/udev/rules.d/50-i2c.rules"])
 
 if args.rtc and args.i2c:
     if args.rtc == "ds1307":
