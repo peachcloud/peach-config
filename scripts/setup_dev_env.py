@@ -24,7 +24,7 @@ if args.rtc and not args.i2c:
 username = args.user
 
 # Create list of system users for (micro)services
-users = ["peach-buttons", "peach-menu", "peach-monitor", "peach-network", "peach-oled", "peach-stats", "peach-web"]
+USERS = ["peach-buttons", "peach-menu", "peach-monitor", "peach-network", "peach-oled", "peach-stats", "peach-web"]
 
 # Update Pi and install requirements
 print("[ UPDATING OPERATING SYSTEM ]")
@@ -46,7 +46,7 @@ subprocess.call(["/usr/sbin/groupadd", "wpactrl-user"])
 
 print("[ CREATING SYSTEM USERS ]")
 # peachcloud microservice users
-for user in users:
+for user in USERS:
     # create new system user without home directory and add to `peach` group
     subprocess.call(["/usr/sbin/adduser", "--system", "--no-create-home", "--ingroup", "peach", user])
 
@@ -62,7 +62,8 @@ subprocess.call(["cp", "conf/50-gpio.rules", "/etc/udev/rules.d/50-gpio.rules"])
 
 if args.i2c:
     print("[ CONFIGURING I2C ]")
-    subprocess.call(["mkdir", "/boot/firmware/overlays/"])
+    if not os.path.exists("/boot/firmware/overlays"):
+        os.mkdir("/boot/firmware/overlays")
     subprocess.call(["cp", "conf/mygpio.dtbo", "/boot/firmware/overlays/mygpio.dtbo"])
     subprocess.call(["cp", "conf/config.txt_i2c", "/boot/firmware/config.txt"])
     subprocess.call(["cp", "conf/modules", "/etc/modules"])
@@ -89,7 +90,8 @@ subprocess.call(["cp", "conf/hostapd.conf", "/etc/hostapd/hostapd.conf"])
 subprocess.call(["cp", "conf/dnsmasq.conf", "/etc/dnsmasq.conf"])
 subprocess.call(["cp", "conf/dhcpd.conf", "/etc/dhcpd.conf"])
 subprocess.call(["cp", "conf/00-accesspoint.rules", "/etc/udev/rules.d/00-accesspoint.rules"])
-subprocess.call(["mkdir", "/lib/systemd/system/networking.service.d/"])
+if not os.path.exists("/lib/systed/system/networking.service.d"):
+    os.mkdir("/lib/systemd/system/networking.service.d")
 subprocess.call(["cp", "conf/reduce-timeout.conf", "/lib/systemd/system/networking.service.d/reduce-timeout.conf"])
 
 print("[ CONFIGURING NGINX ]")
@@ -101,6 +103,11 @@ subprocess.call(["dpkg-reconfigure", "locales"])
 
 print("[ CONFIGURING CONSOLE LOG-LEVEL PRINTING ]")
 subprocess.call(["sysctl", "-w", "kernel.printk=4 4 1 7"])
+
+print("[ CONFIGURING SUDOERS ]")
+if not os.path.exists("/etc/sudoers.d"):
+    os.mkdir("/etc/sudoers.d")
+subprocess.call(["cp", "conf/shutdown", "/etc/sudoers.d/shutdown"])
 
 print("[ PEACHCLOUD SETUP COMPLETE ]")
 
