@@ -78,7 +78,6 @@ subprocess.call(["usermod", "-aG", "sudo", username])
 
 print("[ CREATING SYSTEM GROUPS ]")
 subprocess.call(["/usr/sbin/groupadd", "peach"])
-subprocess.call(["/usr/sbin/groupadd", "i2c-user"])
 subprocess.call(["/usr/sbin/groupadd", "gpio-user"])
 subprocess.call(["/usr/sbin/groupadd", "wpactrl-user"])
 
@@ -90,7 +89,7 @@ for user in users:
                      "--no-create-home", "--ingroup", "peach", user])
 
 print("[ ASSIGNING GROUP MEMBERSHIP ]")
-subprocess.call(["/usr/sbin/usermod", "-a", "-G", "i2c-user", "peach-oled"])
+subprocess.call(["/usr/sbin/usermod", "-a", "-G", "i2c", "peach-oled"])
 subprocess.call(["/usr/sbin/usermod", "-a", "-G",
                  "gpio-user", "peach-buttons"])
 subprocess.call(["/usr/sbin/usermod", "-a", "-G",
@@ -104,13 +103,12 @@ subprocess.call(["cp", "conf/50-gpio.rules",
 
 if args.i2c:
     print("[ CONFIGURING I2C ]")
-    subprocess.call(["mkdir", "/boot/firmware/overlays/"])
+    if not os.path.exists("/boot/firmware/overlays"):
+        os.mkdir("/boot/firmware/overlays")
     subprocess.call(["cp", "conf/mygpio.dtbo",
                      "/boot/firmware/overlays/mygpio.dtbo"])
     subprocess.call(["cp", "conf/config.txt_i2c", "/boot/firmware/config.txt"])
     subprocess.call(["cp", "conf/modules", "/etc/modules"])
-    subprocess.call(["cp", "conf/50-i2c.rules",
-                     "/etc/udev/rules.d/50-i2c.rules"])
 
 if args.rtc and args.i2c:
     if args.rtc == "ds1307":
@@ -139,6 +137,9 @@ subprocess.call(["cp", "conf/dnsmasq.conf", "/etc/dnsmasq.conf"])
 subprocess.call(["cp", "conf/dhcpd.conf", "/etc/dhcpd.conf"])
 subprocess.call(["cp", "conf/00-accesspoint.rules",
                  "/etc/udev/rules.d/00-accesspoint.rules"])
+if not os.path.exists("/lib/systed/system/networking.service.d"):
+    os.mkdir("/lib/systemd/system/networking.service.d")
+subprocess.call(["cp", "conf/reduce-timeout.conf", "/lib/systemd/system/networking.service.d/reduce-timeout.conf"])
 # Allow group members to write to wpa_supplicant.conf
 subprocess.call(["chmod", "664", "/etc/wpa_supplicant/wpa_supplicant.conf"])
 # Set ownership so that wpa_supplicant.conf can be written to by peach-network
@@ -158,6 +159,11 @@ subprocess.call(["dpkg-reconfigure", "locales"])
 
 print("[ CONFIGURING CONSOLE LOG-LEVEL PRINTING ]")
 subprocess.call(["sysctl", "-w", "kernel.printk=4 4 1 7"])
+
+print("[ CONFIGURING SUDOERS ]")
+if not os.path.exists("/etc/sudoers.d"):
+    os.mkdir("/etc/sudoers.d")
+subprocess.call(["cp", "conf/shutdown", "/etc/sudoers.d/shutdown"])
 
 print("[ PEACHCLOUD SETUP COMPLETE ]")
 

@@ -1,5 +1,7 @@
 # peach-config
 
+![Generic badge](https://img.shields.io/badge/version-0.2.0-<COLOR>.svg)
+
 Configuration instructions, files and scripts for deploying PeachCloud. 
 
 _Work in progress._
@@ -12,12 +14,12 @@ Note: Be sure to use the correct device location in the `dd` command, otherwise 
 
 ```bash
 wget https://raspi.debian.net/verified/20200831_raspi_3.img.xz
-xzcat 20190628_raspberry-pi-3_buster_PREVIEW.img.xz | sudo dd of=/dev/sdb bs=64k oflag=dsync status=progress
+xzcat 20200831_raspi_3.img.xz | sudo dd of=/dev/sdb bs=64k oflag=dsync status=progress
 ```
 
 On Mac OS, use the following command to flash the SD card:
 
-`xzcat 20190628_raspberry-pi-3_buster_PREVIEW.img.xz | sudo dd of=/dev/sdcarddisc`
+`xzcat 20200831_raspi_3.img.xz | sudo dd of=/dev/sdcarddisc`
 
 Alternatively, use [Etcher](https://www.balena.io/etcher/).
 
