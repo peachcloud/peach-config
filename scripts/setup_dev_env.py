@@ -46,9 +46,9 @@ subprocess.call(["/usr/sbin/groupadd", "gpio-user"])
 subprocess.call(["/usr/sbin/groupadd", "wpactrl-user"])
 
 print("[ CREATING SYSTEM USERS ]")
-# peachcloud microservice users
+# Peachcloud microservice users
 for user in users:
-    # create new system user without home directory and add to `peach` group
+    # Create new system user without home directory and add to `peach` group
     subprocess.call(["/usr/sbin/adduser", "--system", "--no-create-home", "--ingroup", "peach", user])
 
 print("[ ASSIGNING GROUP MEMBERSHIP ]")
@@ -91,6 +91,10 @@ subprocess.call(["cp", "conf/hostapd.conf", "/etc/hostapd/hostapd.conf"])
 subprocess.call(["cp", "conf/dnsmasq.conf", "/etc/dnsmasq.conf"])
 subprocess.call(["cp", "conf/dhcpd.conf", "/etc/dhcpd.conf"])
 subprocess.call(["cp", "conf/00-accesspoint.rules", "/etc/udev/rules.d/00-accesspoint.rules"])
+# Allow group members to write to wpa_supplicant.conf
+subprocess.call(["chmod", "664", "/etc/wpa_supplicant/wpa_supplicant.conf"])
+# Set ownership so that wpa_supplicant.conf can be written to by peach-network
+subprocess.call(["chown", "root:wpactrl-user", "/etc/wpa_supplicant/wpa_supplicant.conf"])
 
 print("[ CONFIGURING NGINX ]")
 subprocess.call(["cp", "conf/peach.conf", "/etc/nginx/sites-available/peach.conf"])
