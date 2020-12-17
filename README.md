@@ -1,6 +1,6 @@
 # peach-config
 
-![Generic badge](https://img.shields.io/badge/version-0.2.0-<COLOR>.svg)
+![Generic badge](https://img.shields.io/badge/version-0.2.1-<COLOR>.svg)
 
 Configuration instructions, files and scripts for deploying PeachCloud. 
 
