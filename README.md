@@ -158,7 +158,7 @@ iface ens9 inet static
 On Mac OS, you don't need to change the network config on your laptop after changing the config on the pi. 
 
 You should then be able to connect to your pi without wifi via
-```ssh user@peach.local```
+```ssh user@peach.local or ssh user@192.168.0.240```
 
 Note that in this setup, all other internet traffic on the pi will be routed through the wlan0 interface.
 
