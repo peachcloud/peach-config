@@ -139,7 +139,13 @@ subprocess.call(["cp", "conf/00-accesspoint.rules",
                  "/etc/udev/rules.d/00-accesspoint.rules"])
 if not os.path.exists("/lib/systed/system/networking.service.d"):
     os.mkdir("/lib/systemd/system/networking.service.d")
-subprocess.call(["cp", "conf/reduce-timeout.conf", "/lib/systemd/system/networking.service.d/reduce-timeout.conf"])
+subprocess.call(["cp", "conf/reduce-timeout.conf",
+                 "/lib/systemd/system/networking.service.d/reduce-timeout.conf"])
+subprocess.call(["cp", "scripts/activate_ap.sh", "/usr/local/bin/activate_ap"])
+subprocess.call(["chmod", "755", "/usr/local/bin/activate_ap"])
+subprocess.call(["cp", "scripts/activate_client.sh",
+                 "/usr/local/bin/activate_client"])
+subprocess.call(["chmod", "755", "/usr/local/bin/activate_client"])
 # Allow group members to write to wpa_supplicant.conf
 subprocess.call(["chmod", "664", "/etc/wpa_supplicant/wpa_supplicant.conf"])
 # Set ownership so that wpa_supplicant.conf can be written to by peach-network
