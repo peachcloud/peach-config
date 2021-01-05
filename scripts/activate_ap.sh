@@ -1,13 +1,30 @@
 #!/bin/bash
 
 # Activate the software access point (AP)
-echo "Stopping wpa_supplicant"
+
 /usr/bin/systemctl stop wpa_supplicant
-echo "Setting wlan0 interface down"
+if [[ $? -ne 0  ]] ; then
+    echo "Failed to stop wpa_supplicant"
+fi
+
 /usr/sbin/ifdown wlan0
-echo "Unmasking hostapd"
+if [[ $? -ne 0  ]] ; then
+    echo "Failed to set wlan0 interface down"
+fi
+
 /usr/bin/systemctl unmask hostapd
-echo "Starting hostapd"
+if [[ $? -ne 0  ]] ; then
+    echo "Failed to unmask hostapd"
+fi
+
 /usr/bin/systemctl start hostapd
-echo "Starting dnsmasq"
+if [[ $? -ne 0  ]] ; then
+    echo "Failed to start hostapd"
+fi
+
 /usr/bin/systemctl start dnsmasq
+if [[ $? -ne 0  ]] ; then
+    echo "Failed to start dnsmasq"
+fi
+
+echo "Access point activated successfully"
