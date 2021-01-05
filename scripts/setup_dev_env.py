@@ -170,6 +170,7 @@ print("[ CONFIGURING SUDOERS ]")
 if not os.path.exists("/etc/sudoers.d"):
     os.mkdir("/etc/sudoers.d")
 subprocess.call(["cp", "conf/shutdown", "/etc/sudoers.d/shutdown"])
+subprocess.call(["cp", "conf/network", "/etc/sudoers.d/network"])
 
 print("[ PEACHCLOUD SETUP COMPLETE ]")
 

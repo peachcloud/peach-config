@@ -1,0 +1,14 @@
+#
+# Allow peach-network user to execute activate_ap and
+# activate_client scripts without needing to enter
+# a password for sudo'd command.
+#
+
+# User alias for PeachCloud microservices which initiate shutdown
+User_Alias  PEACH_NTWK = peach-network
+
+# Command alias for activate_ap and activate_client scripts
+Cmnd_Alias  SCRIPTS = /usr/local/bin/activate_ap, /usr/local/bin/activate_client
+
+# Allow PEACH_NTWK users to execute SCRIPTS commands without password
+PEACH_NTWK  ALL=(ALL) NOPASSWD: SCRIPTS
