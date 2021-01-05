@@ -3,28 +3,36 @@
 # Activate wireless client mode
 
 /usr/bin/systemctl stop hostapd
-if [[ $? -ne 0  ]] ; then
-    echo "Failed to stop hostapd"
-fi
+hostapd=$?
 
 /usr/bin/systemctl stop dnsmasq
-if [[ $? -ne 0  ]] ; then
-    echo "Failed to stop dnsmasq"
-fi
+dnsmasq=$?
 
 /usr/bin/systemctl start wpa_supplicant
-if [[ $? -ne 0  ]] ; then
-    echo "Failed to start wpa_supplicant"
-fi
+wpa=$?
 
 /usr/sbin/ifup wlan0
-if [[ $? -ne 0  ]] ; then
-    echo "Failed to set wlan0 interface up"
-fi
+ifup=$?
 
 /bin/ip link set wlan0 mode default
-if [[ $? -ne 0  ]] ; then
-    echo "Failed to set wlan0 interface mode to default"
-fi
+mode=$?
 
-echo "Wireless client mode activated successfully"
+if [[ "$hostapd" -ne 0  ]] ; then
+    echo "Failed to stop hostapd"
+    exit 1
+elif [[ "$dnsmasq" -ne 0 ]] ; then
+    echo "Failed to stop dnsmasq"
+    exit 1
+elif [[ "$wpa" -ne 0 ]] ; then
+    echo "Failed to start wpa_supplicant"
+    exit 1
+elif [[ "$ifup" -ne 0 ]] ; then
+    echo "Failed to set wlan0 up"
+    exit 1
+elif [[ "$mode" -ne 0 ]] ; then
+    echo "Failed to set wlan0 mode to default"
+    exit 1
+else
+    echo "Wireless client mode activated successfully"
+    exit 0
+fi
