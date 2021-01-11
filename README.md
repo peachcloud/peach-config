@@ -1,6 +1,6 @@
 # peach-config
 
-![Generic badge](https://img.shields.io/badge/version-0.2.2-<COLOR>.svg)
+![Generic badge](https://img.shields.io/badge/version-0.2.3-<COLOR>.svg)
 
 Configuration instructions, files and scripts for deploying PeachCloud. 
 
@@ -139,7 +139,7 @@ allow-hotplug eth0
 auto eth0
 iface eth0 inet static
     address 192.168.0.241 
-    # the following lines route all internet traffice not to the laptop away from eth0 interface
+    # the following lines route all internet traffic not to the laptop away from eth0 interface
     up ip route del 192.168.0.0/24 dev eth0
     up ip route add 192.168.0.240 dev eth0 src 192.168.0.241
 ```
@@ -150,7 +150,7 @@ The lines below are based on having an ethernet interface with the name ens9.
 iface ens9 inet static
     address 192.168.0.240 
     netmask 255.255.255.0
-    # the following lines route all internet traffice not to the pi away from ens9 interface
+    # the following lines route all internet traffic not to the pi away from ens9 interface
     up ip route del 192.168.0.0/24 dev ens9
     up ip route add 192.168.0.241 dev ens9 src 192.168.0.240
 ```
