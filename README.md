@@ -36,6 +36,8 @@ root
 passwd
 # set interface up (run command twice if you receive 'link is not ready' error on first try)
 ip link set wlan0 up
+# create the wpactrl-user group 
+groupadd wpactrl-user
 # append ssid and password for wifi access point
 wpa_passphrase <SSID> <PASS> > /etc/wpa_supplicant/wpa_supplicant.conf
 # open wpa_supplicant.conf
@@ -69,6 +71,7 @@ auto wlan0
 iface wlan0 inet dhcp
     wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
 ```
+
 
 [ Save and exit ]
 
@@ -145,6 +148,41 @@ A standalone networking configuration script is included in this repository (`sc
 Once the setup script has been run, connect to the system remotely over the local network using ssh or mosh:
 
 `ssh user@peach.local` or `mosh user@peach.local`
+
+### Connecting Directly Through Ethernet Cable
+
+If you would like to work on the pi by connecting directly through an ethernet cable, 
+add the additional lines below to /etc/network/interfaces on the pi.
+This is with a laptop having static IP 192.168.0.240 and pi having static IP 192.168.0.241,
+but these addresses are arbitrary as long as they are in the same subnet.
+
+```
+allow-hotplug eth0
+auto eth0
+iface eth0 inet static
+    address 192.168.0.241 
+    # the following lines route all internet traffic not to the laptop away from eth0 interface
+    up ip route del 192.168.0.0/24 dev eth0
+    up ip route add 192.168.0.240 dev eth0 src 192.168.0.241
+```
+
+Then on your laptop (on debian), add the following to /etc/network/interfaces.
+The lines below are based on having an ethernet interface with the name ens9.
+```
+iface ens9 inet static
+    address 192.168.0.240 
+    netmask 255.255.255.0
+    # the following lines route all internet traffic not to the pi away from ens9 interface
+    up ip route del 192.168.0.0/24 dev ens9
+    up ip route add 192.168.0.241 dev ens9 src 192.168.0.240
+```
+
+On Mac OS, you don't need to change the network config on your laptop after changing the config on the pi. 
+
+You should then be able to connect to your pi without wifi via
+```ssh user@peach.local or ssh user@192.168.0.240```
+
+Note that in this setup, all other internet traffic on the pi will be routed through the wlan0 interface.
 
 ### Troubleshooting
 
