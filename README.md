@@ -6,11 +6,11 @@ Configuration instructions, files and scripts for deploying PeachCloud.
 
 _Work in progress._
 
-### Prerequisite Steps
+## Prerequisite Steps
 
 Download the latest Debian Buster preview image for RPi3 and flash it to an SD card.
 
-Note: Be sure to use the correct device location in the `dd` command, otherwise you risk wiping another connected USB device. `sudo dmesg | tail` can be run after plugging in the SD card to determine the correct device location:
+_Note:_ Be sure to use the correct device location in the `dd` command, otherwise you risk wiping another connected USB device. `sudo dmesg | tail` can be run after plugging in the SD card to determine the correct device location:
 
 ```bash
 wget https://raspi.debian.net/verified/20200831_raspi_3.img.xz
@@ -23,9 +23,9 @@ On Mac OS, use the following command to flash the SD card:
 
 Alternatively, use [Etcher](https://www.balena.io/etcher/).
 
-Note: if the above image link stops working, you can find the complete list of Raspberry Pi Debian images [here](https://raspi.debian.net/tested-images/).
+_Note:_ If the above image link stops working, you can find the complete list of Raspberry Pi Debian images [here](https://raspi.debian.net/tested-images/).
 
-### Setup
+## Setup
 
 Quick setup commands to connect to a local WiFi network over the `wlan0` interface (assuming `eth0` connection is not possible):
 
@@ -79,7 +79,7 @@ iface wlan0 inet dhcp
 
 [ Pi should now be connected to the WiFi network ]
 
-### Scripts
+## Scripts
 
 **System Configuration**
 
@@ -143,20 +143,20 @@ sudo systemctl enable wpa_supplicant@ap0.service
 
 A standalone networking configuration script is included in this repository (`scripts/setup_networking.py`). Network-related documentation can also be found in this repository (`docs`).
 
-### Connecting
+## Connecting
 
 Once the setup script has been run, connect to the system remotely over the local network using ssh or mosh:
 
 `ssh user@peach.local` or `mosh user@peach.local`
 
-### Connecting Directly Through Ethernet Cable
+## Connecting Directly Through Ethernet Cable
 
-If you would like to work on the pi by connecting directly through an ethernet cable, 
-add the additional lines below to /etc/network/interfaces on the pi.
-This is with a laptop having static IP 192.168.0.240 and pi having static IP 192.168.0.241,
+If you would like to work on the Pi by connecting directly through an ethernet cable, 
+add the additional lines below to `/etc/network/interfaces` on the Pi.
+This is with a laptop having static IP `192.168.0.240` and Pi having static IP `192.168.0.241`,
 but these addresses are arbitrary as long as they are in the same subnet.
 
-```
+```bash
 allow-hotplug eth0
 auto eth0
 iface eth0 inet static
@@ -166,9 +166,10 @@ iface eth0 inet static
     up ip route add 192.168.0.240 dev eth0 src 192.168.0.241
 ```
 
-Then on your laptop (on debian), add the following to /etc/network/interfaces.
+Then on your laptop (on Debian), add the following to `/etc/network/interfaces`.
 The lines below are based on having an ethernet interface with the name ens9.
-```
+
+```bash
 iface ens9 inet static
     address 192.168.0.240 
     netmask 255.255.255.0
@@ -177,14 +178,15 @@ iface ens9 inet static
     up ip route add 192.168.0.241 dev ens9 src 192.168.0.240
 ```
 
-On Mac OS, you don't need to change the network config on your laptop after changing the config on the pi. 
+On Mac OS, you don't need to change the network config on your laptop after changing the config on the Pi.
 
-You should then be able to connect to your pi without wifi via
-```ssh user@peach.local or ssh user@192.168.0.240```
+You should then be able to connect to your Pi without WiFi via
 
-Note that in this setup, all other internet traffic on the pi will be routed through the wlan0 interface.
+`ssh user@peach.local` or `ssh user@192.168.0.240`
 
-### Troubleshooting
+_Note:_ In this setup, all other internet traffic on the Pi will be routed through the wlan0 interface.
+
+## Troubleshooting
 
 You may encounter DNS issues if your system time is inaccurate. Please refer to this [StackExchange answer](https://unix.stackexchange.com/a/570382/450882) for details. The steps to remedy the situation are offered here in brief:
 
@@ -194,8 +196,9 @@ timedatectl set-ntp 0
 # edit this line according to your current date & time
 timedatectl set-time "2021-01-13 11:37:10"
 timedatectl set-ntp 1
+exit
 ```
 
-### Licensing
+## Licensing
 
 AGPL-3.0
