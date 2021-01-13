@@ -1,6 +1,6 @@
 # peach-config
 
-![Generic badge](https://img.shields.io/badge/version-0.2.2-<COLOR>.svg)
+![Generic badge](https://img.shields.io/badge/version-0.2.4-<COLOR>.svg)
 
 Configuration instructions, files and scripts for deploying PeachCloud. 
 
@@ -45,7 +45,7 @@ nano /etc/wpa_supplicant/wpa_supplicant.conf
 [ Add the following two lines to top of file ]
 
 ```plaintext
-ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=wpactrl-user
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
 update_config=1
 ```
 
@@ -61,6 +61,8 @@ nano /etc/network/interfaces
 ```plaintext
 auto lo
 iface lo inet loopback
+
+iface eth0 inet dhcp
 
 allow-hotplug wlan0
 auto wlan0
@@ -123,6 +125,18 @@ Networking is handled with `wpa_supplicant`, `hostapd` and `dnsmasq`.
 Once the setup script has been run, connect to the system remotely over the local network using ssh or mosh:
 
 `ssh user@peach.local` or `mosh user@peach.local`
+
+### Troubleshooting
+
+You may encounter DNS issues if your system time is inaccurate. Please refer to this [StackExchange answer](https://unix.stackexchange.com/a/570382/450882) for details. The steps to remedy the situation are offered here in brief:
+
+```bash
+sudo -Es
+timedatectl set-ntp 0
+# edit this line according to your current date & time
+timedatectl set-time "2021-01-13 11:37:10"
+timedatectl set-ntp 1
+```
 
 ### Licensing
 
