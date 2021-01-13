@@ -38,7 +38,6 @@ users = [
     "peach-buttons",
     "peach-menu",
     "peach-monitor",
-    "peach-network",
     "peach-oled",
     "peach-stats",
     "peach-web"]
@@ -55,18 +54,16 @@ subprocess.call(["apt-get",
                  "man-db",
                  "locales",
                  "iw",
-                 "hostapd",
-                 "dnsmasq",
                  "git",
                  "python-smbus",
                  "i2c-tools",
                  "build-essential",
                  "curl",
+                 "libnss-resolve"
                  "mosh",
                  "sudo",
                  "pkg-config",
                  "libssl-dev",
-                 "avahi-daemon",
                  "nginx",
                  "wget",
                  "-y"])
@@ -79,7 +76,6 @@ subprocess.call(["usermod", "-aG", "sudo", username])
 print("[ CREATING SYSTEM GROUPS ]")
 subprocess.call(["/usr/sbin/groupadd", "peach"])
 subprocess.call(["/usr/sbin/groupadd", "gpio-user"])
-subprocess.call(["/usr/sbin/groupadd", "wpactrl-user"])
 
 print("[ CREATING SYSTEM USERS ]")
 # Peachcloud microservice users
@@ -92,8 +88,6 @@ print("[ ASSIGNING GROUP MEMBERSHIP ]")
 subprocess.call(["/usr/sbin/usermod", "-a", "-G", "i2c", "peach-oled"])
 subprocess.call(["/usr/sbin/usermod", "-a", "-G",
                  "gpio-user", "peach-buttons"])
-subprocess.call(["/usr/sbin/usermod", "-a", "-G",
-                 "wpactrl-user", "peach-network"])
 
 # Overwrite configuration files
 print("[ CONFIGURING OPERATING SYSTEM ]")
@@ -130,27 +124,71 @@ if args.rtc and args.i2c:
 print("[ CONFIGURING NETWORKING ]")
 subprocess.call(["cp", "conf/hostname", "/etc/hostname"])
 subprocess.call(["cp", "conf/hosts", "/etc/hosts"])
-subprocess.call(["cp", "conf/interfaces", "/etc/network/interfaces"])
-subprocess.call(["cp", "conf/hostapd", "/etc/default/hostapd"])
-subprocess.call(["cp", "conf/hostapd.conf", "/etc/hostapd/hostapd.conf"])
-subprocess.call(["cp", "conf/dnsmasq.conf", "/etc/dnsmasq.conf"])
-subprocess.call(["cp", "conf/dhcpd.conf", "/etc/dhcpd.conf"])
-subprocess.call(["cp", "conf/00-accesspoint.rules",
-                 "/etc/udev/rules.d/00-accesspoint.rules"])
-if not os.path.exists("/lib/systed/system/networking.service.d"):
-    os.mkdir("/lib/systemd/system/networking.service.d")
-subprocess.call(["cp", "conf/reduce-timeout.conf",
-                 "/lib/systemd/system/networking.service.d/reduce-timeout.conf"])
-subprocess.call(["cp", "scripts/activate_ap.sh", "/usr/local/bin/activate_ap"])
-subprocess.call(["chmod", "755", "/usr/local/bin/activate_ap"])
-subprocess.call(["cp", "scripts/activate_client.sh",
-                 "/usr/local/bin/activate_client"])
-subprocess.call(["chmod", "755", "/usr/local/bin/activate_client"])
-# Allow group members to write to wpa_supplicant.conf
-subprocess.call(["chmod", "664", "/etc/wpa_supplicant/wpa_supplicant.conf"])
-# Set ownership so that wpa_supplicant.conf can be written to by peach-network
-subprocess.call(["chown", "root:wpactrl-user",
-                 "/etc/wpa_supplicant/wpa_supplicant.conf"])
+
+print("[ DEINSTALLING CLASSIC NETWORKING ]")
+subprocess.call(["apt",
+                 "--autoremove",
+                 "purge",
+                 "ifupdown",
+                 "dhcpcd5",
+                 "isc-dhcp-client",
+                 "isc-dhcp-common",
+                 "rsyslog"])
+subprocess.call(["apt-mark",
+                 "hold",
+                 "ifupdown",
+                 "dhcpcd5",
+                 "isc-dhcp-client",
+                 "isc-dhcp-common",
+                 "rsyslog",
+                 "openresolv"])
+subprocess.call(["rm", "-r", "/etc/network", "/etc/dhcp"])
+
+print("[ SETTING UP SYSTEMD-RESOLVED & SYSTEMD-NETWORKD ]")
+subprocess.call(["apt", "--autoremove", "purge", "avahi-daemon"])
+subprocess.call(["apt-mark", "hold", "avahi-daemon", "libnss-mdns"])
+subprocess.call(
+    ["ln", "-sf", "/run/systemd/resolve/stub-resolv.conf", "/etc/resolv.conf"])
+subprocess.call(["systemctl",
+                 "enable",
+                 "systemd-networkd.service",
+                 "systemd-resolved.service"])
+
+print("[ CREATING INTERFACE FILE FOR WIRED CONNECTION ]")
+subprocess.call(["cp", "conf/network/04-wired.network",
+                "/etc/systemd/network/04-wired.network"])
+
+print("[ SETTING UP WPA_SUPPLICANT AS WIFI CLIENT WITH WLAN0 ]")
+subprocess.call(["cp", "conf/network/wpa_supplicant-wlan0.conf",
+                "/etc/wpa_supplicant/wpa_supplicant-wlan0.conf"])
+subprocess.call([
+    "chmod",
+    "600",
+    "/etc/wpa_supplicant/wpa_supplicant-wlan0.conf"])
+subprocess.call(["systemctl", "disable", "wpa_supplicant.service"])
+subprocess.call(["systemctl", "enable", "wpa_supplicant@wlan0.service"])
+
+print("[ SETTING UP WPA_SUPPLICANT AS ACCESS POINT WITH AP0 ]")
+subprocess.call(["cp", "conf/network/wpa_supplicant-ap0.conf",
+                "/etc/wpa_supplicant/wpa_supplicant-ap0.conf"])
+subprocess.call(["chmod", "600", "/etc/wpa_supplicant/wpa_supplicant-ap0.conf"])
+
+print("[ CONFIGURING INTERFACES ]")
+subprocess.call(["cp", "conf/network/08-wlan0.network",
+                "/etc/systemd/network/08-wlan0.network"])
+subprocess.call(["cp", "conf/network/12-ap0.network",
+                "/etc/systemd/network/12-ap0.network"])
+
+print("[ MODIFYING SERVICE FOR ACCESS POINT TO USE AP0 ]")
+subprocess.call(["systemctl", "disable", "wpa_supplicant@ap0.service"])
+subprocess.call(["cp", "conf/network/wpa_supplicant@ap0.service",
+                "/etc/systemd/system/wpa_supplicant@ap0.service"])
+
+print("[ SET WLAN0 TO RUN AS CLIENT ON STARTUP ]")
+subprocess.call(["systemctl", "enable", "wpa_supplicant@wlan0.service"])
+subprocess.call(["systemctl", "disable", "wpa_supplicant@ap0.service"])
+
+print("[ NETWORKING HAS BEEN CONFIGURED ]")
 
 print("[ CONFIGURING NGINX ]")
 subprocess.call(
@@ -170,9 +208,10 @@ print("[ CONFIGURING SUDOERS ]")
 if not os.path.exists("/etc/sudoers.d"):
     os.mkdir("/etc/sudoers.d")
 subprocess.call(["cp", "conf/shutdown", "/etc/sudoers.d/shutdown"])
-subprocess.call(["cp", "conf/network", "/etc/sudoers.d/network"])
 
 print("[ PEACHCLOUD SETUP COMPLETE ]")
+print("[ ------------------------- ]")
+print("[ please reboot your device ]")
 
 # TODO: we might also eventually want to pull the `.deb` release files for
 # all microservices and install them. work towards an all-in-one

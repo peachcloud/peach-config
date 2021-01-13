@@ -44,8 +44,6 @@ print("[ CREATING INTERFACE FILE FOR WIRED CONNECTION ]")
 subprocess.call(["cp", "conf/network/04-wired.network",
                 "/etc/systemd/network/04-wired.network"])
 
-# might need to reboot here...
-
 print("[ SETTING UP WPA_SUPPLICANT AS WIFI CLIENT WITH WLAN0 ]")
 subprocess.call(["cp", "conf/network/wpa_supplicant-wlan0.conf",
                 "/etc/wpa_supplicant/wpa_supplicant-wlan0.conf"])
@@ -72,7 +70,7 @@ subprocess.call(["systemctl", "disable", "wpa_supplicant@ap0.service"])
 subprocess.call(["cp", "conf/network/wpa_supplicant@ap0.service",
                 "/etc/systemd/system/wpa_supplicant@ap0.service"])
 
-print("[ SET WLAN0 TO RUN AS CLIENT ON STARTUP ]")
+print("[ SETTING WLAN0 TO RUN AS CLIENT ON STARTUP ]")
 subprocess.call(["systemctl", "enable", "wpa_supplicant@wlan0.service"])
 subprocess.call(["systemctl", "disable", "wpa_supplicant@ap0.service"])
 
