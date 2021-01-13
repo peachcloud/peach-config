@@ -83,6 +83,7 @@ iface wlan0 inet dhcp
 The `setup_dev_env.py` script can be executed once your Pi is internet-connected and `git` and `python` have been installed. 
 
 ```bash
+# commands assume the use of the `root` user (otherwise first run `sudo -Es`)
 apt update
 apt install git python
 git clone https://github.com/peachcloud/peach-config.git
@@ -116,9 +117,28 @@ Run the script as follows for a full installation and configuration with I2C and
 
 **Network**
 
-The RPi connects to other networks with the `wlan0` interface and deploys an access point on the `ap0` interface. Only one of these modes is active at a time (client or access point). Two scripts are included in this repository to allow easy switching between client and access point modes: `activate_ap.sh` and `activate_client.sh`.
+Networking is handled by `wpa_supplicant` and `systemd-networkd`.
 
-Networking is handled with `wpa_supplicant`, `hostapd` and `dnsmasq`.
+The RPi connects to other networks with the `wlan0` interface and deploys an access point on the `ap0` interface. Only one of these modes is active at a time (client or access point). The RPi boots in client mode by default.
+
+To switch to access point mode:
+
+`sudo systemctl start wpa_supplicant@ap0.service`
+
+To switch to client mode:
+
+`sudo systemctl start wpa_supplicant@wlan0.service`
+
+_Note:_ No stopping of services or rebooting is required.
+
+To enable access point mode on boot:
+
+```bash
+sudo systemctl disable wpa_supplicant@wlan0.service
+sudo systemctl enable wpa_supplicant@ap0.service
+```
+
+A standalone networking configuration script is included in this repository (`scripts/setup_networking.py`). Network-related documentation can also be found in this repository (`docs`).
 
 ### Connecting
 
