@@ -149,42 +149,7 @@ Once the setup script has been run, connect to the system remotely over the loca
 
 `ssh user@peach.local` or `mosh user@peach.local`
 
-## Connecting Directly Through Ethernet Cable
-
-If you would like to work on the Pi by connecting directly through an ethernet cable, 
-add the additional lines below to `/etc/network/interfaces` on the Pi.
-This is with a laptop having static IP `192.168.0.240` and Pi having static IP `192.168.0.241`,
-but these addresses are arbitrary as long as they are in the same subnet.
-
-```bash
-allow-hotplug eth0
-auto eth0
-iface eth0 inet static
-    address 192.168.0.241 
-    # the following lines route all internet traffic not to the laptop away from eth0 interface
-    up ip route del 192.168.0.0/24 dev eth0
-    up ip route add 192.168.0.240 dev eth0 src 192.168.0.241
-```
-
-Then on your laptop (on Debian), add the following to `/etc/network/interfaces`.
-The lines below are based on having an ethernet interface with the name ens9.
-
-```bash
-iface ens9 inet static
-    address 192.168.0.240 
-    netmask 255.255.255.0
-    # the following lines route all internet traffic not to the pi away from ens9 interface
-    up ip route del 192.168.0.0/24 dev ens9
-    up ip route add 192.168.0.241 dev ens9 src 192.168.0.240
-```
-
-On Mac OS, you don't need to change the network config on your laptop after changing the config on the Pi.
-
-You should then be able to connect to your Pi without WiFi via
-
-`ssh user@peach.local` or `ssh user@192.168.0.240`
-
-_Note:_ In this setup, all other internet traffic on the Pi will be routed through the wlan0 interface.
+There is a file with detailed instructions on how to connect via a direct ethernet cable located in `docs/direct-ethernet-setup.md`
 
 ## Troubleshooting
 
