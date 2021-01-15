@@ -38,6 +38,7 @@ users = [
     "peach-buttons",
     "peach-menu",
     "peach-monitor",
+    "peach-network"
     "peach-oled",
     "peach-stats",
     "peach-web"]
@@ -85,9 +86,10 @@ for user in users:
                      "--no-create-home", "--ingroup", "peach", user])
 
 print("[ ASSIGNING GROUP MEMBERSHIP ]")
-subprocess.call(["/usr/sbin/usermod", "-a", "-G", "i2c", "peach-oled"])
 subprocess.call(["/usr/sbin/usermod", "-a", "-G",
                  "gpio-user", "peach-buttons"])
+subprocess.call(["/usr/sbin/usermod", "-a", "-G", "netdev", "peach-network"])
+subprocess.call(["/usr/sbin/usermod", "-a", "-G", "i2c", "peach-oled"])
 
 # Overwrite configuration files
 print("[ CONFIGURING OPERATING SYSTEM ]")
