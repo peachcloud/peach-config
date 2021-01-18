@@ -12,28 +12,25 @@ def update_microservices(purge=False):
     subprocess.call(['apt-get', 'update'])
 
     SERVICES = [
-        {"name": "peach-oled", "repo_url": "https://github.com/peachcloud/peach-oled.git"},
-        {"name": "peach-network", "repo_url": "https://github.com/peachcloud/peach-network.git"},
-        {"name": "peach-stats", "repo_url": "https://github.com/peachcloud/peach-stats.git"},
-        {"name": "peach-web", "repo_url": "https://github.com/peachcloud/peach-web.git"},
-        {"name": "peach-menu", "repo_url": "https://github.com/peachcloud/peach-menu.git"},
-        {"name": "peach-buttons", "repo_url": "https://github.com/peachcloud/peach-buttons.git"},
-        {"name": "peach-monitor", "repo_url": "https://github.com/peachcloud/peach-monitor.git"}
+        "peach-oled",
+        "peach-network",
+        "peach-stats",
+        "peach-web",
+        "peach-menu",
+        "peach-buttons",
+        "peach-monitor",
     ]
 
     for service in SERVICES:
-        name = service['name']
         if purge:
-            print('[ removing {} ]'.format(name))
-            subprocess.call(['apt-get', 'remove', name])
-            subprocess.call(['apt-get', 'purge', name])
-        print('[ installing {} ]'.format(name))
-        subprocess.call(['apt-get', 'install', name])
-
+            print('[ removing {} ]'.format(service))
+            subprocess.call(['apt-get', 'remove', service])
+            subprocess.call(['apt-get', 'purge', service])
+        print('[ installing {} ]'.format(service))
+        subprocess.call(['apt-get', 'install', service])
 
 
 if __name__ == '__main__':
-
     # Setup argument parser
     parser = argparse.ArgumentParser()
     parser.add_argument("-p", "--purge", help="update microservices and purge old installations", action="store_true")
