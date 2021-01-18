@@ -10,6 +10,8 @@ import subprocess
 import sys
 import argparse
 
+from setup_networking import configure_networking
+
 # Setup argument parser
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -123,81 +125,14 @@ if args.rtc and args.i2c:
     subprocess.call(["systemctl", "daemon-reload"])
     subprocess.call(["systemctl", "enable", "activate-rtc"])
 
-print("[ CONFIGURING NETWORKING ]")
-subprocess.call(["cp", "conf/hostname", "/etc/hostname"])
-subprocess.call(["cp", "conf/hosts", "/etc/hosts"])
-
-print("[ DEINSTALLING CLASSIC NETWORKING ]")
-subprocess.call(["apt",
-                 "--autoremove",
-                 "purge",
-                 "ifupdown",
-                 "dhcpcd5",
-                 "isc-dhcp-client",
-                 "isc-dhcp-common",
-                 "rsyslog"])
-subprocess.call(["apt-mark",
-                 "hold",
-                 "ifupdown",
-                 "dhcpcd5",
-                 "isc-dhcp-client",
-                 "isc-dhcp-common",
-                 "rsyslog",
-                 "openresolv"])
-subprocess.call(["rm", "-r", "/etc/network", "/etc/dhcp"])
-
-print("[ SETTING UP SYSTEMD-RESOLVED & SYSTEMD-NETWORKD ]")
-subprocess.call(["apt", "--autoremove", "purge", "avahi-daemon"])
-subprocess.call(["apt-mark", "hold", "avahi-daemon", "libnss-mdns"])
-subprocess.call(
-    ["ln", "-sf", "/run/systemd/resolve/stub-resolv.conf", "/etc/resolv.conf"])
-subprocess.call(["systemctl",
-                 "enable",
-                 "systemd-networkd.service",
-                 "systemd-resolved.service"])
-
-print("[ CREATING INTERFACE FILE FOR WIRED CONNECTION ]")
-subprocess.call(["cp", "conf/network/04-wired.network",
-                 "/etc/systemd/network/04-wired.network"])
-
-print("[ SETTING UP WPA_SUPPLICANT AS WIFI CLIENT WITH WLAN0 ]")
-subprocess.call(["cp", "conf/network/wpa_supplicant-wlan0.conf",
-                 "/etc/wpa_supplicant/wpa_supplicant-wlan0.conf"])
-subprocess.call([
-    "chmod",
-    "600",
-    "/etc/wpa_supplicant/wpa_supplicant-wlan0.conf"])
-subprocess.call(["systemctl", "disable", "wpa_supplicant.service"])
-subprocess.call(["systemctl", "enable", "wpa_supplicant@wlan0.service"])
-
-print("[ SETTING UP WPA_SUPPLICANT AS ACCESS POINT WITH AP0 ]")
-subprocess.call(["cp", "conf/network/wpa_supplicant-ap0.conf",
-                 "/etc/wpa_supplicant/wpa_supplicant-ap0.conf"])
-subprocess.call(
-    ["chmod", "600", "/etc/wpa_supplicant/wpa_supplicant-ap0.conf"])
-
-print("[ CONFIGURING INTERFACES ]")
-subprocess.call(["cp", "conf/network/08-wlan0.network",
-                 "/etc/systemd/network/08-wlan0.network"])
-subprocess.call(["cp", "conf/network/12-ap0.network",
-                 "/etc/systemd/network/12-ap0.network"])
-
-print("[ MODIFYING SERVICE FOR ACCESS POINT TO USE AP0 ]")
-subprocess.call(["systemctl", "disable", "wpa_supplicant@ap0.service"])
-subprocess.call(["cp", "conf/network/wpa_supplicant@ap0.service",
-                 "/etc/systemd/system/wpa_supplicant@ap0.service"])
-
-print("[ SET WLAN0 TO RUN AS CLIENT ON STARTUP ]")
-subprocess.call(["systemctl", "enable", "wpa_supplicant@wlan0.service"])
-subprocess.call(["systemctl", "disable", "wpa_supplicant@ap0.service"])
-
-print("[ NETWORKING HAS BEEN CONFIGURED ]")
+# configure networking via setup_networking.py
+configure_networking()
 
 print("[ CONFIGURING NGINX ]")
 subprocess.call(
     ["cp", "conf/peach.conf", "/etc/nginx/sites-available/peach.conf"])
 subprocess.call(["ln",
-                 "-s",
+                 "-sf",
                  "/etc/nginx/sites-available/peach.conf",
                  "/etc/nginx/sites-enabled/"])
 
