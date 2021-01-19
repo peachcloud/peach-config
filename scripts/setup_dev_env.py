@@ -7,10 +7,11 @@
 
 import os
 import subprocess
-import sys
 import argparse
 
 from setup_networking import configure_networking
+from setup_peach_deb import setup_peach_deb
+from update_microservices import update_microservices
 
 # Setup argument parser
 parser = argparse.ArgumentParser()
@@ -147,12 +148,15 @@ if not os.path.exists("/etc/sudoers.d"):
     os.mkdir("/etc/sudoers.d")
 subprocess.call(["cp", "conf/shutdown", "/etc/sudoers.d/shutdown"])
 
+print("[ CONFIGURING PEACH APT REPO ]")
+setup_peach_deb()
+
+print("[ INSTALLING PEACH MICROSERVICES ]")
+update_microservices()
+
 print("[ PEACHCLOUD SETUP COMPLETE ]")
 print("[ ------------------------- ]")
 print("[ please reboot your device ]")
 
-# TODO: we might also eventually want to pull the `.deb` release files for
-# all microservices and install them. work towards an all-in-one
-# installation script with optional flags to selectively install either
-# the dev environment (will include rust) or a release environment (no
-# rust or other bells and whistles)
+
+# TODO: flags for installing rust, or just the capabilities to run the services
