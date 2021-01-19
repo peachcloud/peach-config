@@ -13,9 +13,9 @@ def setup_peach_deb():
     """
     subprocess.call(["cp", "conf/peach.list", "/etc/apt/sources.list.d/peach.list"])
     # add public key
-    subprocess.call(["wget", "-O", "/srv/pubkey.gpg", "http://apt.peachcloud.org/pubkey.gpg"])
-    subprocess.call(["apt-key", "add", "/srv/pubkey.gpg"])
-    subprocess.call(["rm", "/srv/pubkey.gpg"])
+    subprocess.call(["wget", "-O", "/tmp/pubkey.gpg", "http://apt.peachcloud.org/pubkey.gpg"])
+    subprocess.call(["apt-key", "add", "/tmp/pubkey.gpg"])
+    subprocess.call(["rm", "/tmp/pubkey.gpg"])
 
 
 if __name__ == '__main__':
