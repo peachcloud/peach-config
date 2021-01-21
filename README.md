@@ -1,6 +1,6 @@
 # peach-config
 
-![Generic badge](https://img.shields.io/badge/version-0.2.4-<COLOR>.svg)
+![Generic badge](https://img.shields.io/badge/version-0.2.6-<COLOR>.svg)
 
 Configuration instructions, files and scripts for deploying PeachCloud. 
 
@@ -142,6 +142,8 @@ sudo systemctl enable wpa_supplicant@ap0.service
 ```
 
 A standalone networking configuration script is included in this repository (`scripts/setup_networking.py`). Network-related documentation can also be found in this repository (`docs`).
+
+This repository also contains a script for automatically starting an access point on `ap0` if the `wlan0` service is active but not connected (`/scripts/ap_auto_deploy.sh`). The script can either be run as a one-shot service or scheduled for repeated execution using a `systemd` service file.
 
 ## Connecting
 
