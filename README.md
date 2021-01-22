@@ -143,7 +143,14 @@ sudo systemctl enable wpa_supplicant@ap0.service
 
 A standalone networking configuration script is included in this repository (`scripts/setup_networking.py`). Network-related documentation can also be found in this repository (`docs`).
 
-This repository also contains a script for automatically starting an access point on `ap0` if the `wlan0` service is active but not connected (`/scripts/ap_auto_deploy.sh`). The script can either be run as a one-shot service or scheduled for repeated execution using a `systemd` service file.
+This repository also contains a script for automatically starting an access point on `ap0` if the `wlan0` service is active but not connected (`scripts/ap_auto_deploy.sh`). The executable script is installed at `/usr/local/bin/ap_auto_deploy` and can either be run once-off or scheduled for repeated execution using a `systemd` service file and timer file (`conf/network/ap-auto-deploy.service` and `conf/network/ap-auto-deploy.timer`). When the timer is enabled for repeated execution, the script is automatically run 60 seconds after boot and every 180 seconds after that.
+
+To stop and disable the access point auto deploy service:
+
+```bash
+sudo systemctl stop ap-auto-deploy.timer
+sudo systemctl disable ap-auto-deploy.timer
+```
 
 ## Connecting
 
