@@ -72,6 +72,8 @@ subprocess.call(["apt-get",
                  "nginx",
                  "wget",
                  "gnupg2",
+                 "gnupg1",
+                 "gnupg",
                  "-y"])
 
 # Add the system user with supplied username
