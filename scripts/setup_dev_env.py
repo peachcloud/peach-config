@@ -20,6 +20,7 @@ parser.add_argument(
     type=str,
     help="username for the default user account")
 parser.add_argument("-i", "--i2c", help="configure i2c", action="store_true")
+parser.add_argument("-n", "--noinput", help="run setup without user input", action="store_true")
 parser.add_argument(
     "-r",
     "--rtc",
@@ -74,7 +75,10 @@ subprocess.call(["apt-get",
 
 # Add the system user with supplied username
 print("[ ADDING SYSTEM USER ]")
-subprocess.call(["/usr/sbin/adduser", username])
+if args.noinput:
+    subprocess.call(["/usr/sbin/adduser", "--password", "default", username])
+else:
+    subprocess.call(["/usr/sbin/adduser", username])
 subprocess.call(["usermod", "-aG", "sudo", username])
 
 print("[ CREATING SYSTEM GROUPS ]")
@@ -137,8 +141,9 @@ subprocess.call(["ln",
                  "/etc/nginx/sites-available/peach.conf",
                  "/etc/nginx/sites-enabled/"])
 
-print("[ CONFIGURING LOCALE ]")
-subprocess.call(["dpkg-reconfigure", "locales"])
+if not args.noinput:
+    print("[ CONFIGURING LOCALE ]")
+    subprocess.call(["dpkg-reconfigure", "locales"])
 
 print("[ CONFIGURING CONSOLE LOG-LEVEL PRINTING ]")
 subprocess.call(["sysctl", "-w", "kernel.printk=4 4 1 7"])
