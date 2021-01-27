@@ -22,7 +22,6 @@ def configure_networking():
     subprocess.call(["apt-get",
                      "autoremove",
                      "-y",
-                     "purge",
                      "ifupdown",
                      "dhcpcd5",
                      "isc-dhcp-client",
