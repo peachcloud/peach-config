@@ -19,8 +19,9 @@ def configure_networking():
     subprocess.call(["cp", "conf/hosts", "/etc/hosts"])
 
     print("[ DEINSTALLING CLASSIC NETWORKING ]")
-    subprocess.call(["apt",
-                     "--autoremove",
+    subprocess.call(["apt-get",
+                     "autoremove",
+                     "-y",
                      "purge",
                      "ifupdown",
                      "dhcpcd5",
