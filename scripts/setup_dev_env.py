@@ -76,7 +76,7 @@ subprocess.call(["apt-get",
 # Add the system user with supplied username
 print("[ ADDING SYSTEM USER ]")
 if args.noinput:
-    subprocess.call(["/usr/sbin/adduser", "--disabled-password", username])
+    subprocess.call(["/usr/sbin/adduser", "--system", username])
 else:
     subprocess.call(["/usr/sbin/adduser", username])
 subprocess.call(["usermod", "-aG", "sudo", username])
