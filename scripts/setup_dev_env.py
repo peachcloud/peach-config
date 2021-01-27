@@ -130,9 +130,6 @@ if args.rtc and args.i2c:
     subprocess.call(["systemctl", "daemon-reload"])
     subprocess.call(["systemctl", "enable", "activate-rtc"])
 
-# configure networking via setup_networking.py
-configure_networking()
-
 print("[ CONFIGURING NGINX ]")
 subprocess.call(
     ["cp", "conf/peach.conf", "/etc/nginx/sites-available/peach.conf"])
@@ -158,6 +155,9 @@ setup_peach_deb()
 
 print("[ INSTALLING PEACH MICROSERVICES ]")
 update_microservices()
+
+# configure networking via setup_networking.py
+configure_networking()
 
 print("[ PEACHCLOUD SETUP COMPLETE ]")
 print("[ ------------------------- ]")
