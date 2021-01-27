@@ -12,7 +12,7 @@ import os
 def configure_networking():
 
     print("[ INSTALLING SYSTEM REQUIREMENTS ]")
-    subprocess.call(["apt", "install", "libnss-resolve"])
+    subprocess.call(["apt", "install", "-y", "libnss-resolve"])
 
     print("[ SETTING HOST ]")
     subprocess.call(["cp", "conf/hostname", "/etc/hostname"])
