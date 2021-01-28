@@ -63,7 +63,7 @@ subprocess.call(["apt-get",
                  "i2c-tools",
                  "build-essential",
                  "curl",
-                 "libnss-resolve"
+                 "libnss-resolve",
                  "mosh",
                  "sudo",
                  "pkg-config",
