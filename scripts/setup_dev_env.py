@@ -42,7 +42,7 @@ users = [
     "peach-buttons",
     "peach-menu",
     "peach-monitor",
-    "peach-network"
+    "peach-network",
     "peach-oled",
     "peach-stats",
     "peach-web"]
@@ -64,7 +64,7 @@ subprocess.call(["apt-get",
                  "i2c-tools",
                  "build-essential",
                  "curl",
-                 "libnss-resolve"
+                 "libnss-resolve",
                  "mosh",
                  "sudo",
                  "pkg-config",
