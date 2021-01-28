@@ -38,7 +38,7 @@ def configure_networking():
     subprocess.call(["rm", "-rf", "/etc/network", "/etc/dhcp"])
 
     print("[ SETTING UP SYSTEMD-RESOLVED & SYSTEMD-NETWORKD ]")
-    subprocess.call(["apt-get", "--autoremove", "avahi-daemon"])
+    subprocess.call(["apt-get", "autoremove", "-y", "avahi-daemon"])
     subprocess.call(["apt-mark", "hold", "avahi-daemon", "libnss-mdns"])
     subprocess.call(
         ["ln", "-sf", "/run/systemd/resolve/stub-resolv.conf", "/etc/resolv.conf"])
