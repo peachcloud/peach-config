@@ -66,7 +66,7 @@ def configure_networking():
 
     print("[ CREATING BOOT SCRIPT TO COPY NETWORK CONFIGS ]")
     subprocess.call(["cp", "conf/network/copy-wlan.sh", "/usr/local/bin/copy-wlan.sh"])
-    subprocess.call(["chmod", "770", "/usr/local/bin/copy-wlan.s"])
+    subprocess.call(["chmod", "770", "/usr/local/bin/copy-wlan.sh"])
     subprocess.call(["cp", "conf/network/copy-wlan.service", "/etc/systemd/system/copy-wlan.service"])
     subprocess.call(["systemctl", "enable", "copy-wlan.service"])
 
