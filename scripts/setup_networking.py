@@ -64,6 +64,12 @@ def configure_networking():
     subprocess.call(["systemctl", "disable", "wpa_supplicant.service"])
     subprocess.call(["systemctl", "enable", "wpa_supplicant@wlan0.service"])
 
+    print("[ CREATING BOOT SCRIPT TO COPY NETWORK CONFIGS ]")
+    subprocess.call(["cp", "conf/network/copy-wlan.sh", "/usr/local/bin/copy-wlan.sh"])
+    subprocess.call(["chmod", "770", "/usr/local/bin/copy-wlan.s"])
+    subprocess.call(["cp", "conf/network/copy-wlan.service", "/etc/systemd/system/copy-wlan.service"])
+    subprocess.call(["systemctl", "enable", "copy-wlan.service"])
+
     print("[ SETTING UP WPA_SUPPLICANT AS ACCESS POINT WITH AP0 ]")
     subprocess.call(["cp", "conf/network/wpa_supplicant-ap0.conf",
                      "/etc/wpa_supplicant/wpa_supplicant-ap0.conf"])
