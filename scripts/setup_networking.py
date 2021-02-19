@@ -96,8 +96,6 @@ def configure_networking():
                      "/etc/systemd/system/ap-auto-deploy.service"])
     subprocess.call(["cp", "conf/network/ap-auto-deploy.timer",
                      "/etc/systemd/system/ap-auto-deploy.timer"])
-    subprocess.call(["systemctl", "enable", "ap-auto-deploy.timer"])
-    subprocess.call(["systemctl", "start", "ap-auto-deploy.timer"])
 
     print("[ NETWORKING HAS BEEN CONFIGURED ]")
 
