@@ -8,6 +8,7 @@
 import os
 import subprocess
 import argparse
+import crypt
 
 from setup_networking import configure_networking
 from setup_peach_deb import setup_peach_deb
@@ -76,7 +77,10 @@ subprocess.call(["apt-get",
 # Add the system user with supplied username
 print("[ ADDING SYSTEM USER ]")
 if args.noinput:
-    subprocess.call(["/usr/sbin/adduser", "--system", username])
+    # if no input, then peach user starts with password peachcloud
+    password = "peachcloud"
+    enc_pass = crypt.crypt(password, "22")
+    subprocess.call(["/usr/sbin/adduser", "-m", "-p", crypt_password, "-g", "peach", "-g", "sudo", username])
 else:
     subprocess.call(["/usr/sbin/adduser", username])
 subprocess.call(["usermod", "-aG", "sudo", username])
