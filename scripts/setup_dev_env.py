@@ -78,9 +78,9 @@ subprocess.call(["apt-get",
 print("[ ADDING SYSTEM USER ]")
 if args.noinput:
     # if no input, then peach user starts with password peachcloud
-    password = "peachcloud"
-    enc_pass = crypt.crypt(password, "22")
-    subprocess.call(["/usr/sbin/adduser", "-m", "-p", crypt_password, "-g", "peach", "-g", "sudo", username])
+    default_password = "peachcloud"
+    enc_password = crypt.crypt(default_password, "22")
+    subprocess.call(["/usr/sbin/adduser", "-m", "-p", enc_password, "-g", "peach", "-g", "sudo", username])
 else:
     subprocess.call(["/usr/sbin/adduser", username])
 subprocess.call(["usermod", "-aG", "sudo", username])
