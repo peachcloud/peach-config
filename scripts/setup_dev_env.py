@@ -74,20 +74,22 @@ subprocess.call(["apt-get",
                  "wget",
                  "-y"])
 
+# Create system groups first
+print("[ CREATING SYSTEM GROUPS ]")
+subprocess.call(["/usr/sbin/groupadd", "peach"])
+subprocess.call(["/usr/sbin/groupadd", "gpio-user"])
+
 # Add the system user with supplied username
 print("[ ADDING SYSTEM USER ]")
 if args.noinput:
     # if no input, then peach user starts with password peachcloud
     default_password = "peachcloud"
     enc_password = crypt.crypt(default_password, "22")
-    subprocess.call(["/usr/sbin/adduser", "-m", "-p", enc_password, "-g", "peach", "-g", "sudo", username])
+    subprocess.call(["/usr/sbin/useradd", "-m", "-p", enc_password, username])
 else:
     subprocess.call(["/usr/sbin/adduser", username])
 subprocess.call(["usermod", "-aG", "sudo", username])
-
-print("[ CREATING SYSTEM GROUPS ]")
-subprocess.call(["/usr/sbin/groupadd", "peach"])
-subprocess.call(["/usr/sbin/groupadd", "gpio-user"])
+subprocess.call(["usermod", "-aG", "peach", username])
 
 print("[ CREATING SYSTEM USERS ]")
 # Peachcloud microservice users
