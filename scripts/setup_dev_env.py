@@ -22,6 +22,7 @@ parser.add_argument(
     help="username for the default user account")
 parser.add_argument("-i", "--i2c", help="configure i2c", action="store_true")
 parser.add_argument("-n", "--noinput", help="run setup without user input", action="store_true")
+parser.add_argument("-d", "--defaultlocale", help="set default locale to en_US.UTF-8 for compatability", action="store_true")
 parser.add_argument(
     "-r",
     "--rtc",
@@ -147,6 +148,15 @@ subprocess.call(["ln",
 if not args.noinput:
     print("[ CONFIGURING LOCALE ]")
     subprocess.call(["dpkg-reconfigure", "locales"])
+
+# this is specified as an argument, so a user can run this script in no-input  mode without updating their locale
+# if they have already set it
+if args.defaultlocale:
+    print("[ SETTING DEFAULT LOCALE TO en_US.UTF-8 FOR COMPATIBILITY  ]")
+    subprocess.call(["sed", "-i", "-e","s/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/", "/etc/locale.gen"])
+    with open('/etc/default/locale', 'w') as f:
+        print('LANG="en_US.UTF-8"', file=f)
+    subprocess.call(["dpkg-reconfigure", "--frontend=noninteractive", "locales"])
 
 print("[ CONFIGURING CONSOLE LOG-LEVEL PRINTING ]")
 subprocess.call(["sysctl", "-w", "kernel.printk=4 4 1 7"])
