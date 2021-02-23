@@ -52,7 +52,8 @@ def configure_networking():
                      "/etc/systemd/network/04-wired.network"])
 
     print("[ SETTING UP WPA_SUPPLICANT AS WIFI CLIENT WITH WLAN0 ]")
-    # to avoid overwriting previous credentials, only copy file if it doesn't already exist
+    # to avoid overwriting previous credentials, only copy file if it doesn't
+    # already exist
     if not os.path.exists("/etc/wpa_supplicant/wpa_supplicant-wlan0.conf"):
         subprocess.call(["cp", "conf/network/wpa_supplicant-wlan0.conf",
                          "/etc/wpa_supplicant/wpa_supplicant-wlan0.conf"])
@@ -60,7 +61,8 @@ def configure_networking():
         "chmod",
         "660",
         "/etc/wpa_supplicant/wpa_supplicant-wlan0.conf"])
-    subprocess.call(["chown", "root:netdev", "/etc/wpa_supplicant/wpa_supplicant-wlan0.conf"])
+    subprocess.call(
+        ["chown", "root:netdev", "/etc/wpa_supplicant/wpa_supplicant-wlan0.conf"])
     subprocess.call(["systemctl", "disable", "wpa_supplicant.service"])
     subprocess.call(["systemctl", "enable", "wpa_supplicant@wlan0.service"])
 
@@ -90,6 +92,16 @@ def configure_networking():
     print("[ SETTING WLAN0 TO RUN AS CLIENT ON STARTUP ]")
     subprocess.call(["systemctl", "enable", "wpa_supplicant@wlan0.service"])
     subprocess.call(["systemctl", "disable", "wpa_supplicant@ap0.service"])
+
+    print("[ CREATING ACCESS POINT AUTO-DEPLOY SCRIPT ]")
+    subprocess.call(["cp", "scripts/ap_auto_deploy.sh",
+                     "/usr/local/bin/ap_auto_deploy"])
+
+    print("[ CONFIGURING ACCESS POINT AUTO-DEPLOY SERVICE ]")
+    subprocess.call(["cp", "conf/network/ap-auto-deploy.service",
+                     "/etc/systemd/system/ap-auto-deploy.service"])
+    subprocess.call(["cp", "conf/network/ap-auto-deploy.timer",
+                     "/etc/systemd/system/ap-auto-deploy.timer"])
 
     print("[ NETWORKING HAS BEEN CONFIGURED ]")
 
