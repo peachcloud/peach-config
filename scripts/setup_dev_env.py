@@ -86,7 +86,8 @@ if args.noinput:
     # if no input, then peach user starts with password peachcloud
     default_password = "peachcloud"
     enc_password = crypt.crypt(default_password, "22")
-    subprocess.call(["/usr/sbin/useradd", "-m", "-p", enc_password, username])
+    print("[ CREATING SYSTEM USER WITH DEFAULT PASSWORD ]")
+    subprocess.call(["/usr/sbin/useradd", "-m", "-p", enc_password, "-g", "peach", username])
 else:
     subprocess.call(["/usr/sbin/adduser", username])
 subprocess.call(["usermod", "-aG", "sudo", username])
