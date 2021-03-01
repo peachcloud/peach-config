@@ -12,16 +12,16 @@ import os
 def configure_networking():
 
     print("[ INSTALLING SYSTEM REQUIREMENTS ]")
-    subprocess.call(["apt", "install", "libnss-resolve"])
+    subprocess.call(["apt", "install", "-y", "libnss-resolve"])
 
     print("[ SETTING HOST ]")
     subprocess.call(["cp", "conf/hostname", "/etc/hostname"])
     subprocess.call(["cp", "conf/hosts", "/etc/hosts"])
 
     print("[ DEINSTALLING CLASSIC NETWORKING ]")
-    subprocess.call(["apt",
-                     "--autoremove",
-                     "purge",
+    subprocess.call(["apt-get",
+                     "autoremove",
+                     "-y",
                      "ifupdown",
                      "dhcpcd5",
                      "isc-dhcp-client",
@@ -38,7 +38,7 @@ def configure_networking():
     subprocess.call(["rm", "-rf", "/etc/network", "/etc/dhcp"])
 
     print("[ SETTING UP SYSTEMD-RESOLVED & SYSTEMD-NETWORKD ]")
-    subprocess.call(["apt", "--autoremove", "purge", "avahi-daemon"])
+    subprocess.call(["apt-get", "autoremove", "-y", "avahi-daemon"])
     subprocess.call(["apt-mark", "hold", "avahi-daemon", "libnss-mdns"])
     subprocess.call(
         ["ln", "-sf", "/run/systemd/resolve/stub-resolv.conf", "/etc/resolv.conf"])
@@ -65,6 +65,12 @@ def configure_networking():
         ["chown", "root:netdev", "/etc/wpa_supplicant/wpa_supplicant-wlan0.conf"])
     subprocess.call(["systemctl", "disable", "wpa_supplicant.service"])
     subprocess.call(["systemctl", "enable", "wpa_supplicant@wlan0.service"])
+
+    print("[ CREATING BOOT SCRIPT TO COPY NETWORK CONFIGS ]")
+    subprocess.call(["cp", "conf/network/copy-wlan.sh", "/usr/local/bin/copy-wlan.sh"])
+    subprocess.call(["chmod", "770", "/usr/local/bin/copy-wlan.sh"])
+    subprocess.call(["cp", "conf/network/copy-wlan.service", "/etc/systemd/system/copy-wlan.service"])
+    subprocess.call(["systemctl", "enable", "copy-wlan.service"])
 
     print("[ SETTING UP WPA_SUPPLICANT AS ACCESS POINT WITH AP0 ]")
     subprocess.call(["cp", "conf/network/wpa_supplicant-ap0.conf",

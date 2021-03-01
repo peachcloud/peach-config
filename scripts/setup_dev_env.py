@@ -8,6 +8,7 @@
 import os
 import subprocess
 import argparse
+import crypt
 
 from setup_networking import configure_networking
 from setup_peach_deb import setup_peach_deb
@@ -20,6 +21,8 @@ parser.add_argument(
     type=str,
     help="username for the default user account")
 parser.add_argument("-i", "--i2c", help="configure i2c", action="store_true")
+parser.add_argument("-n", "--noinput", help="run setup without user input", action="store_true")
+parser.add_argument("-d", "--defaultlocale", help="set default locale to en_US.UTF-8 for compatability", action="store_true")
 parser.add_argument(
     "-r",
     "--rtc",
@@ -72,14 +75,23 @@ subprocess.call(["apt-get",
                  "wget",
                  "-y"])
 
-# Add the system user with supplied username
-print("[ ADDING SYSTEM USER ]")
-subprocess.call(["/usr/sbin/adduser", username])
-subprocess.call(["usermod", "-aG", "sudo", username])
-
+# Create system groups first
 print("[ CREATING SYSTEM GROUPS ]")
 subprocess.call(["/usr/sbin/groupadd", "peach"])
 subprocess.call(["/usr/sbin/groupadd", "gpio-user"])
+
+# Add the system user with supplied username
+print("[ ADDING SYSTEM USER ]")
+if args.noinput:
+    # if no input, then peach user starts with password peachcloud
+    default_password = "peachcloud"
+    enc_password = crypt.crypt(default_password, "22")
+    print("[ CREATING SYSTEM USER WITH DEFAULT PASSWORD ]")
+    subprocess.call(["/usr/sbin/useradd", "-m", "-p", enc_password, "-g", "peach", username])
+else:
+    subprocess.call(["/usr/sbin/adduser", username])
+subprocess.call(["usermod", "-aG", "sudo", username])
+subprocess.call(["usermod", "-aG", "peach", username])
 
 print("[ CREATING SYSTEM USERS ]")
 # Peachcloud microservice users
@@ -134,8 +146,18 @@ subprocess.call(["ln",
                  "/etc/nginx/sites-available/peach.conf",
                  "/etc/nginx/sites-enabled/"])
 
-print("[ CONFIGURING LOCALE ]")
-subprocess.call(["dpkg-reconfigure", "locales"])
+if not args.noinput:
+    print("[ CONFIGURING LOCALE ]")
+    subprocess.call(["dpkg-reconfigure", "locales"])
+
+# this is specified as an argument, so a user can run this script in no-input  mode without updating their locale
+# if they have already set it
+if args.defaultlocale:
+    print("[ SETTING DEFAULT LOCALE TO en_US.UTF-8 FOR COMPATIBILITY  ]")
+    subprocess.call(["sed", "-i", "-e","s/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/", "/etc/locale.gen"])
+    with open('/etc/default/locale', 'w') as f:
+        print('LANG="en_US.UTF-8"', file=f)
+    subprocess.call(["dpkg-reconfigure", "--frontend=noninteractive", "locales"])
 
 print("[ CONFIGURING CONSOLE LOG-LEVEL PRINTING ]")
 subprocess.call(["sysctl", "-w", "kernel.printk=4 4 1 7"])
