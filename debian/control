@@ -1,0 +1,13 @@
+Source: peach-config
+Section: utils
+Priority: optional
+Maintainer: Max Fowler,
+Build-Depends: debhelper (>= 9), python3
+Standards-Version: 3.9.5
+X-Python3-Version: >= 3.2
+
+Package: peach-config
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends}
+Description: configures peachcloud
+ insert long description, indented with spaces
