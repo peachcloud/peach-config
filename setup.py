@@ -17,6 +17,6 @@ setup(
         ]
     },
     classifiers=[
-        "License :: OSI Approved :: BSD License",
+        "License :: OSI Approved :: AGPL-3.0",
     ],
 )
