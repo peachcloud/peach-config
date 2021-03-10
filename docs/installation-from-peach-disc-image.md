@@ -7,8 +7,8 @@ Download the latest PeachCloud image from http://releases.peachcloud.org and fla
 _Note:_ Be sure to use the correct device location in the `dd` command, otherwise you risk wiping another connected USB device. `sudo dmesg | tail` can be run after plugging in the SD card to determine the correct device location:
 
 ```bash
-wget https://raspi.debian.net/verified/20200831_raspi_3.img.xz
-xzcat 20200831_raspi_3.img.xz | sudo dd of=/dev/sdb bs=64k oflag=dsync status=progress
+wget http://releases.peachcloud.org/peach-imgs/20210225/20210225_peach_raspi3.img
+sudo dd 20210225_peach_raspi3.img of=/dev/sdb bs=64k oflag=dsync status=progress
 ```
 
 On Mac OS, use the following command to flash the SD card:
@@ -17,7 +17,7 @@ On Mac OS, use the following command to flash the SD card:
 
 Alternatively, use [Etcher](https://www.balena.io/etcher/).
 
-_Note:_ If the above image link stops working, you can find the complete list of Raspberry Pi Debian images [here](https://raspi.debian.net/tested-images/).
+_Note:_ If the above image link stops working, you can find the latest image [here](http://releases.peachcloud.org).
 
 Your SD card now has a complete PeachCloud installation on it and is ready to use. 
 
