@@ -19,7 +19,8 @@ def update_microservices(purge=False):
         "peach-menu",
         "peach-buttons",
         "peach-monitor",
-        "peach-probe"
+        "peach-probe",
+        "peach-go-sbot",
     ]
 
     for service in SERVICES:
