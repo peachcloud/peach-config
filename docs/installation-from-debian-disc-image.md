@@ -1,7 +1,7 @@
 ## Installation From Debian Disc Image
 
 You can also setup PeachCloud by installing Debian onto an sd card, and then installing and running peach-config. 
-This is essentially how the PeachCloud disc image is created (see [peach-img-builder](link)).
+This is essentially how the PeachCloud disc image is created (see [peach-img-builder](https://github.com/peachcloud/peach-img-builder)).
 
 Here are the steps for installing peach-config on Debian. 
 

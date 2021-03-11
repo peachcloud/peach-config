@@ -16,7 +16,7 @@ You can find detailed instructions on setting up PeachCloud from a PeachCloud di
 
 You can find a guide for installing plain Debian onto a Raspberry pi [here](docs/installation-from-debian-disc-image.md).
 
-One you have Debian running on your pi, you can install peach-config by adding the PeachCloud apt repository and using apt. 
+Once you have Debian running on your pi, you can install peach-config by adding the PeachCloud apt repository and using apt. 
 
 To add the PeachCloud Debian package archive as an apt source, run the following commands from your Pi:
 
