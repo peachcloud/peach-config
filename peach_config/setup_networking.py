@@ -96,7 +96,7 @@ def configure_networking():
     subprocess.call(["systemctl", "disable", "wpa_supplicant@ap0.service"])
 
     print("[ CREATING ACCESS POINT AUTO-DEPLOY SCRIPT ]")
-    subprocess.call(["cp", "scripts/ap_auto_deploy.sh",
+    subprocess.call(["cp", os.path.join(PROJECT_PATH, "conf/ap_auto_deploy.sh"),
                      "/usr/local/bin/ap_auto_deploy"])
 
     print("[ CONFIGURING ACCESS POINT AUTO-DEPLOY SERVICE ]")
