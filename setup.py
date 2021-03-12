@@ -13,7 +13,7 @@ setup(
     include_package_data=True,
     entry_points = {
         'console_scripts' : [
-            'peach-config = peach_config.setup_peach:main',
+            'peach-config = peach_config.main:peach_config',
         ]
     },
     classifiers=[
