@@ -3,10 +3,12 @@ import sys
 import re
 import json
 
+from peach_config.utils import load_hardware_config
+
 
 def get_currently_installed_microservices():
-    packages = subprocess.check_output(["apt", "list", "--installed"]).decode(sys.stdout.encoding).strip()
-    peach_packages = re.finditer(r'(\S+)/buster,now (\S+) \S+.*\n', packages)
+    packages = subprocess.check_output(["dpkg", "-l"]).decode(sys.stdout.encoding).strip()
+    peach_packages = re.finditer(r'\S+\s+(\S*peach\S+)\s+(\S+).*\n', packages)
     package_dict = {}
     for package in peach_packages:
         package_dict[package.group(1)] = package.group(2)
@@ -15,19 +17,14 @@ def get_currently_installed_microservices():
     return package_dict
 
 
-def get_last_installed_hardware_configuration():
-    return {
-        "i2c": True,
-        "rtc": "ds123"
-    }
-
-
 def generate_manifest():
     packages = get_currently_installed_microservices()
-    configuration = get_last_installed_hardware_configuration()
+    hardware_config = load_hardware_config()
+    if not hardware_config:
+        hardware_config = "No PeachCloud hardware config found"
     manifest = {
         "packages": packages,
-        "hardware": configuration
+        "hardware": hardware_config,
     }
     print(json.dumps(manifest))
 
