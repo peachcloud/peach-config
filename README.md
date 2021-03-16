@@ -1,6 +1,6 @@
 # peach-config
 
-![Generic badge](https://img.shields.io/badge/version-0.2.9-<COLOR>.svg)
+![Generic badge](https://img.shields.io/badge/version-0.2.10-<COLOR>.svg)
 
 Python module which handles installation and updating for PeachCloud.
 

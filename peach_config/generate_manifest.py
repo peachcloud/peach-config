@@ -26,7 +26,7 @@ def generate_manifest():
         "packages": packages,
         "hardware": hardware_config,
     }
-    print(json.dumps(manifest))
+    print(json.dumps(manifest, indent=4, sort_keys=True))
 
 
 if __name__ == '__main__':
