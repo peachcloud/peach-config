@@ -15,7 +15,7 @@ import sys
 from peach_config.constants import PROJECT_PATH
 from peach_config.setup_networking import configure_networking
 from peach_config.setup_peach_deb import setup_peach_deb
-from peach_config.update_microservices import update_microservices
+from peach_config.update import update_microservices
 from peach_config.utils import save_hardware_config
 
 

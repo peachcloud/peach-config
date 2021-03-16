@@ -12,11 +12,11 @@ def run_update_self():
     subprocess.check_call(['apt-get', 'install', 'python3-peach-config'])
 
 
-def update_others(purge=False):
+def update_microservices(purge=False):
     """
-    installs all peach others
+    installs all peach microservices
     or updates them to the latest version
-    :param purge: if provided, purges all others before re-installing them
+    :param purge: if provided, purges all microservices before re-installing them
     :return: None
     """
     subprocess.check_call(['apt-get', 'update'])
@@ -43,24 +43,24 @@ def update_others(purge=False):
 
 
 def update(parser):
-    # update peach-config (update itself) then run update on all other others
+    # update peach-config (update itself) then run update on all other microservices
     args = parser.parse_args()
 
     # just update self
     if args.self:
         run_update_self()
-    # just update other others
-    elif args.others:
-        update_others(purge=args.purge)
-    # update self and then update other others
+    # just update other microservices
+    elif args.microservices:
+        update_microservices(purge=args.purge)
+    # update self and then update other microservices
     else:
         run_update_self()
-        subprocess.check_call(['/usr/bin/peach-config', 'update', '--others'])
+        subprocess.check_call(['/usr/bin/peach-config', 'update', '--microservices'])
 
 
 def init_update_parser(parser):
     # update argument parser
-    parser.add_argument("-m", "--others", help="update all other peach microservices", action="store_true")
+    parser.add_argument("-m", "--microservices", help="update all other peach microservices", action="store_true")
     parser.add_argument("-s", "--self", help="update peach-config", action="store_true")
     parser.add_argument("-p", "--purge", help="purge old installations when updating", action="store_true")
     return parser
