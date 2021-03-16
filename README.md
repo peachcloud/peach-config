@@ -28,8 +28,8 @@ wget -O - http://apt.peachcloud.org/pubkey.gpg | sudo apt-key add -
 You can then install peach-config with apt:
 
 ``` bash
-sudo apt update
-sudo apt install peach-config
+sudo apt-get update
+sudo apt-get install python3-peach-config
 ```
 
 peach-config has only been tested on a Raspberry Pi 3 B+ running Debian 10. 
