@@ -9,15 +9,18 @@ import os
 import subprocess
 import argparse
 import crypt
+import sys
+
 
 from peach_config.constants import PROJECT_PATH
 from peach_config.setup_networking import configure_networking
 from peach_config.setup_peach_deb import setup_peach_deb
 from peach_config.update_microservices import update_microservices
+from peach_config.utils import save_hardware_config
 
-def main():
+
+def init_setup_parser(parser):
     # Setup argument parser
-    parser = argparse.ArgumentParser()
     parser.add_argument(
         "user",
         type=str,
@@ -32,6 +35,12 @@ def main():
             "ds1307",
             "ds3231"],
         help="configure real-time clock")
+    return parser
+
+
+def setup_peach(parser):
+
+    # parse args from parser
     args = parser.parse_args()
 
     # Ensure RTC configuration requirements are met (if selected)
@@ -178,12 +187,12 @@ def main():
     # configure networking via setup_networking.py
     configure_networking()
 
+    # save hardware configuration as a json
+    save_hardware_config(i2c=args.i2c, rtc=args.rtc)
+
     print("[ PEACHCLOUD SETUP COMPLETE ]")
     print("[ ------------------------- ]")
     print("[ please reboot your device ]")
 
-
-if __name__ == '__main__':
-    sys.exit(main())
 
 
