@@ -1,5 +1,9 @@
 import subprocess
 import argparse
+import json
+import sys
+
+from peach_config.constants import SERVICES
 
 
 
@@ -16,24 +20,16 @@ def update_microservices(purge=False):
     """
     installs all peach microservices
     or updates them to the latest version
+    except for peach-config
     :param purge: if provided, purges all microservices before re-installing them
     :return: None
     """
     subprocess.check_call(['apt-get', 'update'])
 
-    SERVICES = [
-        "peach-oled",
-        "peach-network",
-        "peach-stats",
-        "peach-web",
-        "peach-menu",
-        "peach-buttons",
-        "peach-monitor",
-        "peach-probe",
-        "peach-go-sbot",
-    ]
-
     for service in SERVICES:
+        if service == 'python3-peach-config':
+            # skip peach-config, which is handled separately
+            continue
         if purge:
             print('[ removing {} ]'.format(service))
             subprocess.call(['apt-get', 'remove', service])
@@ -46,8 +42,11 @@ def update(parser):
     # update peach-config (update itself) then run update on all other microservices
     args = parser.parse_args()
 
+    # if -list then just show updates available without running them
+    if args.list:
+        list_available_updates()
     # just update self
-    if args.self:
+    elif args.self:
         run_update_self()
     # just update other microservices
     elif args.microservices:
@@ -58,9 +57,24 @@ def update(parser):
         subprocess.check_call(['/usr/bin/peach-config', 'update', '--microservices'])
 
 
+def list_available_updates():
+    """
+    checks if there are any PeachCloud updates available and displays them
+    """
+    subprocess.check_call(['apt-get', 'update'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    output = subprocess.check_output(["apt", "list", "--upgradable"], stderr=subprocess.DEVNULL).decode(sys.stdout.encoding).strip()
+    available_updates = []
+    for line in output.splitlines():
+        for service in SERVICES:
+            if service in line:
+                available_updates.append(line)
+    print(json.dumps(available_updates))
+
+
 def init_update_parser(parser):
     # update argument parser
     parser.add_argument("-m", "--microservices", help="update all other peach microservices", action="store_true")
+    parser.add_argument("-l", "--list", help="list if there are any updates available without running them", action="store_true")
     parser.add_argument("-s", "--self", help="update peach-config", action="store_true")
     parser.add_argument("-p", "--purge", help="purge old installations when updating", action="store_true")
     return parser
