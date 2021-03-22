@@ -6,7 +6,7 @@ import subprocess
 import os
 
 from peach_config.constants import PROJECT_PATH
-from peach_config.update_microservices import update_microservices
+from peach_config.update import update_microservices
 
 
 
