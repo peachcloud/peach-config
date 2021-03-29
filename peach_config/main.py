@@ -5,7 +5,7 @@ import sys
 import argparse
 
 from peach_config.generate_manifest import generate_manifest
-from peach_config.setup_peach import init_setup_parser, setup_peach
+from peach_config.setup_peach import init_setup_parser, setup_peach_from_parser, resetup_peach
 from peach_config.update import init_update_parser, update
 
 
@@ -27,11 +27,13 @@ def peach_config():
 
     # switch based on subcommand
     if args.subcommand == 'setup':
-        setup_peach(parser)
+        setup_peach_from_parser(parser)
     elif args.subcommand == 'manifest':
         generate_manifest()
     elif args.subcommand == 'update':
         update(parser)
+    if args.subcommand == 'resetup':
+        resetup_peach()
 
 
 if __name__ == '__main__':
