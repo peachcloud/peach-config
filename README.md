@@ -44,7 +44,21 @@ The peach-config debian module installs a command-line tool to `/usr/bin/peach-c
 `peach-config -h` shows the help menu:
 
 ```bash
-usage: peach-config [-h] [-i] [-n] [-d] [-r {ds1307,ds3231}] user
+usage: peach-config [-h] {setup,manifest,update} ...
+
+positional arguments:
+  {setup,manifest,update}
+    setup               idempotent setup of PeachCloud
+    manifest            prints manifest of peach configurations
+    update              updates all PeachCloud microservices
+
+optional arguments:
+  -h, --help            show this help message and exit
+```
+
+The setup command takes a few different parameters to customize configuration. 
+```bash
+usage: peach-config setup [-h] [-i] [-n] [-d] [-r {ds1307,ds3231}] user
 
 positional arguments:
   user                  username for the default user account
@@ -64,7 +78,7 @@ The script also allows optional configuration of I2C and real-time clock (RTC) m
 
 Run the script as follows for a full installation and configuration with I2C and the ds3231 RTC module (username in this case is `peach`):
 
-`peach-config -i -r ds3231 peach`
+`peach-config setup -i -r ds3231 peach`
 
 
 ## Licensing
