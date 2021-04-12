@@ -55,7 +55,6 @@ def setup_peach(parser):
         "peach-buttons",
         "peach-menu",
         "peach-monitor",
-        "peach-network",
         "peach-oled",
         "peach-stats",
         "peach-web"]
