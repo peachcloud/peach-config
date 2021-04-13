@@ -38,14 +38,14 @@ def init_setup_parser(parser):
     return parser
 
 
-def resetup_peach():
+def reconfigure_peach():
     """
     reconfigures peach using whatever the last used setup settings were
     """
     hardware_config = load_hardware_config()
     if not hardware_config:
         raise Exception("Could not load file at /var/lib/peachcloud/hardware_config.json: "
-                        "cannot call resetup before calling setup")
+                        "cannot call reconfigure before calling setup")
     setup_peach(
         i2c=hardware_config['i2c'],
         rtc=hardware_config['rtc'],
