@@ -17,6 +17,7 @@ def peach_config():
 
     # create parsers for subcommands
     setup_parser = subparsers.add_parser('setup', help="idempotent setup of PeachCloud")
+    subparsers.add_parser('resetup', help="resetup PeachCloud using last used settings")
     init_setup_parser(setup_parser)
     subparsers.add_parser('manifest', help='prints manifest of peach configurations')
     update_parser = subparsers.add_parser('update', help='updates all PeachCloud microservices')
