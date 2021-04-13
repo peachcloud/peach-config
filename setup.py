@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name = "peach-config",
-    version = "0.2.13",
+    version = "0.2.14",
     author = "Andrew Reid",
     author_email = "gnomad@cryptolab.net",
     description = "Python package for configuring and updating PeachCloud",

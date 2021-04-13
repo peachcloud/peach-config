@@ -16,7 +16,7 @@ from peach_config.constants import PROJECT_PATH
 from peach_config.setup_networking import configure_networking
 from peach_config.setup_peach_deb import setup_peach_deb
 from peach_config.update import update_microservices
-from peach_config.utils import save_hardware_config
+from peach_config.utils import save_hardware_config, load_hardware_config
 
 
 def init_setup_parser(parser):
@@ -38,8 +38,25 @@ def init_setup_parser(parser):
     return parser
 
 
-def setup_peach(parser):
+def reconfigure_peach():
+    """
+    reconfigures peach using whatever the last used setup settings were
+    """
+    hardware_config = load_hardware_config()
+    if not hardware_config:
+        raise Exception("Could not load file at /var/lib/peachcloud/hardware_config.json: "
+                        "cannot call reconfigure before calling setup")
+    setup_peach(
+        i2c=hardware_config['i2c'],
+        rtc=hardware_config['rtc'],
+        no_input=True
+    )
 
+
+def setup_peach_from_parser(parser):
+    """
+    parse arguments and then run setup_peach
+    """
     # parse args from parser
     args = parser.parse_args()
 
@@ -47,9 +64,24 @@ def setup_peach(parser):
     if args.rtc and not args.i2c:
         parser.error("i2c configuration is required for rtc configuration")
 
-    # Save username argument
-    username = args.user
+    # then call setup_peach
+    setup_peach(
+        i2c=args.i2c,
+        rtc=args.rtc,
+        no_input=args.noinput,
+        default_locale=args.default_locale
+    )
 
+
+def setup_peach(i2c, rtc, no_input=False, default_locale=False):
+    """
+    idempotent function which sets up all peach configuration
+    :param i2c:
+    :param rtc:
+    :param no_input:
+    :param default_locale:
+    :return:
+    """
     # Create list of system users for (micro)services
     users = [
         "peach-buttons",
@@ -90,18 +122,18 @@ def setup_peach(parser):
     subprocess.call(["/usr/sbin/groupadd", "peach"])
     subprocess.call(["/usr/sbin/groupadd", "gpio-user"])
 
-    # Add the system user with supplied username
+    # Add the system users
     print("[ ADDING SYSTEM USER ]")
-    if args.noinput:
+    if no_input:
         # if no input, then peach user starts with password peachcloud
         default_password = "peachcloud"
         enc_password = crypt.crypt(default_password, "22")
         print("[ CREATING SYSTEM USER WITH DEFAULT PASSWORD ]")
-        subprocess.call(["/usr/sbin/useradd", "-m", "-p", enc_password, "-g", "peach", username])
+        subprocess.call(["/usr/sbin/useradd", "-m", "-p", enc_password, "-g", "peach", "peach"])
     else:
-        subprocess.call(["/usr/sbin/adduser", username])
-    subprocess.call(["usermod", "-aG", "sudo", username])
-    subprocess.call(["usermod", "-aG", "peach", username])
+        subprocess.call(["/usr/sbin/adduser", "peach"])
+    subprocess.call(["usermod", "-aG", "sudo", "peach"])
+    subprocess.call(["usermod", "-aG", "peach", "peach"])
 
     print("[ CREATING SYSTEM USERS ]")
     # Peachcloud microservice users
@@ -122,7 +154,7 @@ def setup_peach(parser):
     subprocess.call(["cp", os.path.join(PROJECT_PATH, "conf/50-gpio.rules"),
                      "/etc/udev/rules.d/50-gpio.rules"])
 
-    if args.i2c:
+    if i2c:
         print("[ CONFIGURING I2C ]")
         if not os.path.exists("/boot/firmware/overlays"):
             os.mkdir("/boot/firmware/overlays")
@@ -131,12 +163,12 @@ def setup_peach(parser):
         subprocess.call(["cp", os.path.join(PROJECT_PATH, "conf/config.txt_i2c"), "/boot/firmware/config.txt"])
         subprocess.call(["cp", os.path.join(PROJECT_PATH, "conf/modules"), "/etc/modules"])
 
-    if args.rtc and args.i2c:
-        if args.rtc == "ds1307":
+    if rtc and i2c:
+        if rtc == "ds1307":
             print("[ CONFIGURING DS1307 RTC MODULE ]")
             subprocess.call(["cp", os.path.join(PROJECT_PATH, "conf/config.txt_ds1307"),
                              "/boot/firmware/config.txt"])
-        elif args.rtc == "ds3231":
+        elif rtc == "ds3231":
             print("[ CONFIGURING DS3231 RTC MODULE ]")
             subprocess.call(["cp", os.path.join(PROJECT_PATH, "conf/config.txt_ds3231"),
                              "/boot/firmware/config.txt"])
@@ -156,13 +188,13 @@ def setup_peach(parser):
                      "/etc/nginx/sites-available/peach.conf",
                      "/etc/nginx/sites-enabled/"])
 
-    if not args.noinput:
+    if not no_input:
         print("[ CONFIGURING LOCALE ]")
         subprocess.call(["dpkg-reconfigure", "locales"])
 
     # this is specified as an argument, so a user can run this script in no-input  mode without updating their locale
     # if they have already set it
-    if args.defaultlocale:
+    if default_locale:
         print("[ SETTING DEFAULT LOCALE TO en_US.UTF-8 FOR COMPATIBILITY  ]")
         subprocess.call(["sed", "-i", "-e","s/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/", "/etc/locale.gen"])
         with open('/etc/default/locale', 'w') as f:
@@ -187,7 +219,7 @@ def setup_peach(parser):
     configure_networking()
 
     # save hardware configuration as a json
-    save_hardware_config(i2c=args.i2c, rtc=args.rtc)
+    save_hardware_config(i2c=i2c, rtc=rtc)
 
     print("[ PEACHCLOUD SETUP COMPLETE ]")
     print("[ ------------------------- ]")

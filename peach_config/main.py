@@ -5,7 +5,7 @@ import sys
 import argparse
 
 from peach_config.generate_manifest import generate_manifest
-from peach_config.setup_peach import init_setup_parser, setup_peach
+from peach_config.setup_peach import init_setup_parser, setup_peach_from_parser, reconfigure_peach
 from peach_config.update import init_update_parser, update
 
 
@@ -17,6 +17,7 @@ def peach_config():
 
     # create parsers for subcommands
     setup_parser = subparsers.add_parser('setup', help="idempotent setup of PeachCloud")
+    subparsers.add_parser('reconfigure', help="reconfigure PeachCloud using last used settings")
     init_setup_parser(setup_parser)
     subparsers.add_parser('manifest', help='prints manifest of peach configurations')
     update_parser = subparsers.add_parser('update', help='updates all PeachCloud microservices')
@@ -27,11 +28,13 @@ def peach_config():
 
     # switch based on subcommand
     if args.subcommand == 'setup':
-        setup_peach(parser)
+        setup_peach_from_parser(parser)
     elif args.subcommand == 'manifest':
         generate_manifest()
     elif args.subcommand == 'update':
         update(parser)
+    if args.subcommand == 'reconfigure':
+        reconfigure_peach()
 
 
 if __name__ == '__main__':
