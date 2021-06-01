@@ -11,6 +11,7 @@ SERVICES = [
     "peach-buttons",
     "peach-monitor",
     "peach-probe",
+    "peach-dyndns-updater",
     "peach-go-sbot",
     "python3-peach-config"
 ]
