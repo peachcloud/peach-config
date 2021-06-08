@@ -69,7 +69,7 @@ def setup_peach_from_parser(parser):
         i2c=args.i2c,
         rtc=args.rtc,
         no_input=args.noinput,
-        default_locale=args.default_locale
+        default_locale=args.defaultlocale
     )
 
 
