@@ -130,7 +130,7 @@ def setup_peach(i2c, rtc, no_input=False, default_locale=False):
         default_password = "peachcloud"
         enc_password = crypt.crypt(default_password, "22")
         print("[ CREATING SYSTEM USER WITH DEFAULT PASSWORD ]")
-        subprocess.call(["/usr/sbin/useradd", "-m", "-p", enc_password, "-g", "peach", "peach"])
+        subprocess.call(["/usr/sbin/useradd", "-m", "-p", enc_password, "-g", "peach", "-s", "/bin/bash", "peach"])
     else:
         subprocess.call(["/usr/sbin/adduser", "peach"])
     subprocess.call(["usermod", "-aG", "sudo", "peach"])
