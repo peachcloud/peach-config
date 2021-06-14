@@ -23,6 +23,7 @@ def peach_config():
     subparsers.add_parser('manifest', help='prints manifest of peach configurations')
     update_parser = subparsers.add_parser('update', help='updates all PeachCloud microservices')
     init_update_parser(update_parser)
+    subparsers.add_parser('permissions', help="reset user permissions for all folder on peachcloud device")
 
     # parse arguments
     args = parser.parse_args()

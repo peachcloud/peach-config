@@ -92,6 +92,7 @@ def set_peach_permissions():
     subprocess.check_call(["chown", "-R", "peach-web", data_dir])
     subprocess.check_call(["chgrp", "-R", "peach", data_dir])
     set_permissions(data_dir)
+    print("[ PERMISSIONS SUCCESSFULLY RESET ]")
 
 
 def setup_peach(i2c, rtc, no_input=False, default_locale=False):
