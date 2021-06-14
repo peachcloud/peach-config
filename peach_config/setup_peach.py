@@ -73,6 +73,27 @@ def setup_peach_from_parser(parser):
     )
 
 
+def set_permissions(path):
+    """
+    helper function which sets read/write permissions for files
+    and read/write/execute permissions for folders
+    see https://superuser.com/questions/91935/how-to-recursively-chmod-all-directories-except-files
+    """
+    subprocess.check_call(["chmod", "-R", "u+rwX,go+rX,go-w", path])
+
+
+def set_peach_permissions():
+    """
+    resets correct permissions in all folders across the peach device
+    """
+    # peachcloud data
+    print("[ RESETTING PEACH FOLDER PERMISSIONS ]")
+    data_dir = "/var/lib/peachcloud"
+    subprocess.check_call(["chown", "-R", "peach-web", data_dir])
+    subprocess.check_call(["chgrp", "-R", "peach", data_dir])
+    set_permissions(data_dir)
+
+
 def setup_peach(i2c, rtc, no_input=False, default_locale=False):
     """
     idempotent function which sets up all peach configuration
