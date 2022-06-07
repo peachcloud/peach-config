@@ -1,3 +1,7 @@
+⚠️ This repo is no longer active and has been archived. The active repo can be found at https://git.coopcloud.tech/PeachCloud/peach-workspace/src/branch/main/peach-config ⚠️
+
+-----
+
 # peach-config
 
 ![Generic badge](https://img.shields.io/badge/version-0.2.17-<COLOR>.svg)
